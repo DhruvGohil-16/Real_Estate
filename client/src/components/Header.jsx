@@ -1,7 +1,7 @@
 import React from 'react'
 import {FaSearch} from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-
+/* breaks at 884px */
 export default function Header() {
   return (
     <header className='bg-slate-300 shadow-sm ty:fixed df:static '>
@@ -16,6 +16,12 @@ export default function Header() {
 
           </h1>
         </Link>
+        
+        <ul className='flex'>
+          <Link to='/'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Sell</li></Link>
+          <Link to='/sign-in'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Buy</li></Link>
+          <Link to='/sign-up'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Rent</li></Link>
+        </ul>
 
         <form className='bg-slate-200 flex items-center p-3 rounded-md border border-amber-100 hover:shadow-lg hover:border-blue-400'>
 
@@ -27,10 +33,10 @@ export default function Header() {
 
         </form>
 
-        <ul className='flex gap-4 '>
-          <Link to='/'><li className='ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Home</li></Link>
-          <Link to='/sign-in'><li className='ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Login</li></Link>
-          <Link to='/sign-up'><li className='ty:hidden df:hidden  sm:inline bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-600 cursor-pointer'>Sign up</li></Link>
+        <ul className='flex '>
+          <Link to='/'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Home</li></Link>
+          <Link to='/sign-in'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Login</li></Link>
+          <Link to='/sign-up'><li className='p-3 ty:hidden df:hidden  sm:inline bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-600 cursor-pointer'>Sign up</li></Link>
         </ul>
       </div>
     </header>

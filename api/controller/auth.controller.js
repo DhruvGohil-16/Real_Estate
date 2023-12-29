@@ -1,7 +1,8 @@
 import user from '../model/user.model.js';
 import bcryptjs from 'bcryptjs';
+import { errhandler } from '../utils/error.js';
 
-export const signup = async(req,res) => {   //makes call asynchronous
+export const signup = async(req,res,next) => {   //makes call asynchronous
     
     const {username, email, password} = req.body;
     const encryptpassword = bcryptjs.hashSync(password,10);
@@ -12,6 +13,6 @@ export const signup = async(req,res) => {   //makes call asynchronous
         res.status(201).json("User created successfully...");
 
     }catch(err){
-        res.status(500).json(err.message);
+        next(err);  //system error middleware generator
     }
 }

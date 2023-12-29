@@ -6,8 +6,11 @@ import userrouter from './routes/user.route.js';
 import authrouter from './routes/auth.route.js';
 
 dotenv.config();
+
 const app = express();
+
 const port = 1624;
+
 mongoose.connect(process.env.MONGO)
         .then(() => console.log("--Connected to real-estate database--"))
         .catch((err) => {console.log(err);})
@@ -15,6 +18,20 @@ mongoose.connect(process.env.MONGO)
 app.listen(port, ()=>{
     console.log("--Server running on port 1624--");
 });
+
 app.use(express.json());    //enable to get json data to server
+
 app.use('/api/user',userrouter);    //user test route
+
 app.use('/api/auth',authrouter);    //authentication route "sign-up"
+
+app.use((err,req,res,next) => {     //error handling middleware
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    return res.status(statusCode).json({
+        success:false,
+        status:statusCode,
+        message,
+    });
+});

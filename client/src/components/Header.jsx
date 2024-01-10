@@ -17,10 +17,10 @@ export default function Header() {
           </h1>
         </Link>
         
-        <ul className='flex'>
-          <Link to='/'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Sell</li></Link>
-          <Link to='/sign-in'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Buy</li></Link>
-          <Link to='/sign-up'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Rent</li></Link>
+        <ul className='flex '>
+          <Link to='/'><li className='p-4 py-6 ty:hidden df:hidden  sm:inline hover: hover:border-b-4 hover:border-black cursor-pointer'>Sell</li></Link>
+          <Link to='/sign-in'><li className='p-4 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Buy</li></Link>
+          <Link to='/sign-up'><li className='p-4 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Rent</li></Link>
         </ul>
 
         <form className='bg-slate-200 flex items-center p-3 rounded-md border border-amber-100 hover:shadow-lg hover:border-blue-400'>
@@ -33,10 +33,10 @@ export default function Header() {
 
         </form>
 
-        <ul className='flex '>
+        <ul className='flex items-center justify-center'>
           <Link to='/'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Home</li></Link>
           <Link to='/sign-in'><li className='p-3 py-6 ty:hidden df:hidden  sm:inline hover:border-b-4 hover:border-black cursor-pointer'>Login</li></Link>
-          <Link to='/sign-up'><li className='p-3 ty:hidden df:hidden  sm:inline bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-600 cursor-pointer'>Sign up</li></Link>
+          <Link to='/sign-up'><li className='p-3 ty:hidden df:hidden  sm:inline pb-3 bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-700 cursor-pointer'>Sign-up</li></Link>
         </ul>
       </div>
     </header>

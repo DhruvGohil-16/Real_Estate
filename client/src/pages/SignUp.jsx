@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, Navigate, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FcGoogle } from "react-icons/fc"
 import Header from '../components/Header'
 import '../App.css'
@@ -14,16 +14,15 @@ export default function SignUp() {
   const [error,setError] = useState(null);
   const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
-  
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   const [formData, setFormData] = useState({
     username:"",
     password:"",
     email:""
   })
+  
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   const handleChange = (e) => {
     const { name, type, value } = e.target;
@@ -104,7 +103,9 @@ export default function SignUp() {
         setUsername(null);
         setLoading(false);
         setConfirmPasswordMessage(null);
+        await delay(1000);
         navigate('/sign-in');
+        return;
       }
     } catch (error) {
       setLoading(false);

@@ -4,7 +4,7 @@ import Header from '../components/Header'
 export default function Profile() {
   return (
     <div>
-      <Header></Header>
+      <Header/>
       Profle
     </div>
   )

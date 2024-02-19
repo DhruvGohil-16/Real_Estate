@@ -9,14 +9,18 @@ dotenv.config();
 
 const app = express();
 
-const port = 1624;
+const port = process.env.PORT || 1624;
 
-mongoose.connect(process.env.MONGO)
+mongoose.connect(process.env.MONGO) //promise if we are connected of not method:mongoose.connect()
         .then(() => console.log("--Connected to real-estate database--"))
         .catch((err) => {console.log(err);})
 
 app.listen(port, ()=>{
     console.log("--Server running on port 1624--");
+});
+
+app.get("/", (req,res)=>{
+    res.send("Welcome to dhruv's real estate");
 });
 
 app.use(express.json());    //enable to get json data to server
@@ -25,10 +29,10 @@ app.use('/api/user',userrouter);    //user test route
 
 app.use('/api/auth',authrouter);    //authentication route "sign-up"
 
-app.use((err,req,res,next) => {     //error handling middleware
+app.use((err,req,res,next) => {    //error handling middleware
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
+    // console.log(message);
     return res.status(statusCode).json({
         success:false,
         status:statusCode,

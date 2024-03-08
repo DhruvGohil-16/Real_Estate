@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({    //user attribute to be stored in dat
             type : String,
             required : true,
             minlength : 8,
-        }
+        },
+        profilePic :{
+            type : String,
+            default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk8Gl9eN3We2TcCYbPyAxqG6SqN02Wey-1vB0iuhZfyw&s",
+        },
     },{timestamps:true});
 
     //  generate jwt token containing userid,private key & expiring time

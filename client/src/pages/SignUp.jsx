@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
-import { FcGoogle } from "react-icons/fc"
 import Header from '../components/Header'
 import '../App.css'
+import GoogAuth from '../components/GoogAuth';
 
 export default function SignUp() {
 
@@ -173,10 +173,7 @@ export default function SignUp() {
             <div className='MyDivider'></div>
           </div>
     
-          <button className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4">
-            <FcGoogle className='h-7 w-7'/>
-            <div className='pb-1 w-4/5'>Continue with Google</div>
-          </button>
+          <GoogAuth/>
 
           <button  className="flex justify-evenly w-full p-2 rounded  border border-black hover:bg-slate-300 mb-4">
           <svg  xmlns="http://www.w3.org/2000/svg"

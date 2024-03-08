@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signInFailure,signInStart,signInSuccess } from "../myredux/user/userSlice"; 
 import Header from "../components/Header";
 import "../App.css";
+import GoogAuth from "../components/GoogAuth";
 
 export default function Signin() {
   const [signInData, setSignInData] = useState({
@@ -61,24 +61,6 @@ export default function Signin() {
     } catch (error) {
       dispatch(signInFailure(error.message));
     }
-  };
-
-  const Login = () => {
-    const handleGoogleLogin = async () => {
-      try {
-        await auth.signInWithPopup(googleProvider);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const handleFacebookLogin = async () => {
-      try {
-        await auth.signInWithPopup(facebookProvider);
-      } catch (error) {
-        console.error(error);
-      }
-    };
   };
 
   return (
@@ -162,10 +144,8 @@ export default function Signin() {
             <div className="MyDivider"></div>
           </div>
 
-          <button className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4">
-            <FcGoogle className="h-7 w-7" />
-            <div className="pb-1 w-4/5">Continue with Google</div>
-          </button>
+          <GoogAuth/>
+          
           <button className="flex justify-evenly w-full p-2 rounded  border border-black hover:bg-slate-300 mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -70,3 +70,44 @@ export const signin = async (req, res, next) => {
     next(err);
   }
 };
+
+export const google = async (req,res,next) => {
+
+  try {
+    const authUser = await user.findOne({email:req.body.email});
+
+    if(authUser){
+      const token = authUser.generateAuthToken(); //generates jwt token
+      
+      const { password: pass, ...restCred } = authUser._doc;
+      res //  sending token back as response in form of cookie
+        .cookie("DrEstate_access_token", token, {
+          httpOnly: true,
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        })
+        .status(200)
+        .json(restCred);
+    }else{
+        const generatePassword = Math.random().toString(36).slice(-8)+Math.random().toString(36).slice(-8);
+        const hashGeneratedPass = bcryptjs.hashSync(generatePassword,10);
+        const newUser = new user({
+          username:req.body.name.split(" ").join("").toLowerCase()+Math.random().toString(36).slice(-5),
+          email:req.body.email,
+          password:hashGeneratedPass,
+          profilePic:req.body.photo,
+        });
+
+        await newUser.save(); //next line of te code will be executed after data saved in db
+        const { password: pass, ...restCred } = newUser._doc;
+        res //  sending token back as response in form of cookie
+          .cookie("DrEstate_access_token", token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          })
+          .status(200)
+          .json(restCred);
+    }
+  } catch (error) {
+    next(error);
+  }
+}

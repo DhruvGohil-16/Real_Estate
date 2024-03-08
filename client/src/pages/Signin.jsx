@@ -54,7 +54,7 @@ export default function Signin() {
         dispatch(signInFailure(data.message));
       } else {
         await delay(2000);
-        dispatch(signInSuccess("sign-in successful"));
+        dispatch(signInSuccess(data));
         navigate("/");
         return;
       }

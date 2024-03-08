@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signInFailure,signInStart,signInSuccess } from "../myredux/user/userSlice"; 
 import Header from "../components/Header";
 import "../App.css";
 
 export default function Signin() {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [signInData, setSignInData] = useState({
     email_username: "",
     password: "",
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {error,loading} =  useSelector((state)=>state.user)
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -26,10 +28,9 @@ export default function Signin() {
   };
 
   const handleSubmit = async (e) => {
-    setError(null);
     e.preventDefault();
 
-    setLoading(true);
+    dispatch(signInStart());
 
     try {
       console.log("calling fetch");
@@ -50,18 +51,15 @@ export default function Signin() {
       // console.log(data);
 
       if (data.success === false) {
-        setError(data.message);
-        setLoading(false);
+        dispatch(signInFailure(data.message));
       } else {
-        setError("sign-in successful");
         await delay(2000);
-        setLoading(false);
+        dispatch(signInSuccess("sign-in successful"));
         navigate("/");
         return;
       }
     } catch (error) {
-      setLoading(false);
-      setError(error.message);
+      dispatch(signInFailure(error.message));
     }
   };
 

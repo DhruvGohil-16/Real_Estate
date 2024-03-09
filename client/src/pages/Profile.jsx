@@ -5,7 +5,7 @@ export default function Profile() {
   return (
     <div>
       <Header/>
-      Profle
+      Profile
     </div>
   )
 }

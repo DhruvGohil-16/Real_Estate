@@ -2,9 +2,11 @@ import React from 'react'
 import {FaSearch} from 'react-icons/fa'
 import {FcMenu} from 'react-icons/fc'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 /* breaks at 884px */
 
 export default function Header() {
+  const {currentUser} = useSelector(state => state.user);
   return (
     <header className='bg-slate-300 shadow-sm ty:fixed df:sticky'>
 
@@ -44,8 +46,17 @@ export default function Header() {
             <FcMenu size={32} className='ty:inline md:hidden cursor-pointer'/>
           </button>
           <Link to='/'><div className='p-3 py-6 ty:hidden md:inline hover:border-y-4 hover:border-b-2 hover:border-b-black hover:bg-gray-400/60 hover:border-t-gray-400/60 cursor-pointer'>Home</div></Link>
-          <Link to='/sign-in'><div className='p-3 py-6 ty:hidden md:inline hover:border-y-4 hover:border-b-2 hover:border-b-black hover:bg-gray-400/60 hover:border-t-gray-400/60 cursor-pointer'>Login</div></Link>
-          <Link to='/sign-up'><div className='p-3 ml-1 ty:hidden md:inline pb-3 bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-700 cursor-pointer'>Sign-up</div></Link>
+          
+            {currentUser ? 
+            (<Link to='/profile'>
+              <img className='ml-2 rounded-full h-9 w-9 object-cover' src={currentUser.profilePic} alt='Profilehttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk8Gl9eN3We2TcCYbPyAxqG6SqN02Wey-1vB0iuhZfyw&s'/>
+            </Link>) 
+            : 
+            (<>
+              <Link to='/sign-in'><div className='p-3 py-6 ty:hidden md:inline hover:border-y-4 hover:border-b-2 hover:border-b-black hover:bg-gray-400/60 hover:border-t-gray-400/60 cursor-pointer'>Login</div></Link>
+              <Link to='/sign-up'><div className='p-3 ml-1 ty:hidden md:inline pb-3 bg-black text-white px-4 py-2 rounded-3xl hover:bg-slate-700 cursor-pointer'>Sign-up</div></Link>
+            </>)
+            }
         </div>
       </div>
     </header>

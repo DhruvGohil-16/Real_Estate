@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userrouter from './routes/user.route.js';
 import authrouter from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.get("/", (req,res)=>{
 });
 
 app.use(express.json());    //enable to get json data to server
+
+app.use(cookieParser());
 
 app.use('/api/user',userrouter);    //user test route
 

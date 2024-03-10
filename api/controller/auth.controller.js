@@ -59,8 +59,7 @@ export const signin = async (req, res, next) => {
 
     const token = validUser.generateAuthToken(); //generates jwt token
     const { password: pass, ...restCred } = validUser._doc;
-    res //  sending token back as response in form of cookie
-      .cookie("DrEstate_access_token", token, {
+    res.cookie("DrEstate_access_token", token, {  //  sending token back as response in form of cookie
         httpOnly: true,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { signInFailure,signInStart,signInSuccess } from "../myredux/user/userSlice"; 
+import { defaultRed, signInFailure,signInStart,signInSuccess } from "../myredux/user/userSlice"; 
 import Header from "../components/Header";
 import "../App.css";
 import GoogAuth from "../components/GoogAuth";
@@ -14,6 +14,8 @@ export default function Signin() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {error,loading} =  useSelector((state)=>state.user)
+
+  useEffect(()=>{dispatch(defaultRed())},[]);
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));

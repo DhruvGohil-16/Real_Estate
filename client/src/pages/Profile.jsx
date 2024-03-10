@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import {useToast} from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom';
+import {useToast,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverBody,PopoverFooter,PopoverArrow,PopoverCloseButton,PopoverAnchor} from '@chakra-ui/react'
 import {
   getDownloadURL,
   getStorage,
@@ -10,7 +11,7 @@ import {
 import { app } from '../firebase';
 import Header from '../components/Header'
 import { Link } from 'react-router-dom';
-import { updateStart,updateFailure,updateSuccess } from '../myredux/user/userSlice.js';
+import { updateStart,updateFailure,updateSuccess, deleteStart, deleteFailure, deleteSuccess, defaultRed } from '../myredux/user/userSlice.js';
 
 export default function Profile() {
 
@@ -23,8 +24,10 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
   const toast = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    dispatch(defaultRed());
     if (file) {
       handleFileUpload(file);
     }
@@ -117,7 +120,7 @@ const handleSubmit = async (e) => {
   console.log(formData);
   try {
     const res = await fetch(`./api/user/update/${currentUser._id}`,{
-      // function is used to send an asynchronous HTTP request to the server's apdate API endpoint ("./api/user/update/id")
+      // function is used to send an asynchronous HTTP request to the server's update API endpoint ("./api/user/update/id")
       method: "POST", // Adjust the HTTP method based on your API endpoint requirements
       headers: {
         "Content-Type": "application/json", //format of the request body
@@ -143,12 +146,38 @@ const handleSubmit = async (e) => {
           });
 
         dispatch(updateSuccess(data));
-
+        
         
       } catch (error) {
     dispatch(updateFailure(error.message));
   }
 
+}
+
+const handleDelete = async (e) => {
+  setFileError("");
+  dispatch(deleteStart());
+  console.log(formData);
+  try {
+    const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+      method: 'DELETE',
+    });
+
+      const data = await res.json(); //get json response in data
+
+      // console.log(data);
+
+      if (data.success === false) {
+        dispatch(deleteFailure(data.message));
+        return;
+      } 
+        await delay(2000);
+
+        dispatch(deleteSuccess(data));
+        
+    } catch (error) {
+    dispatch(deleteFailure(error.message));
+  };
 }
   return (
     <div className="ty:fixed df:static">
@@ -211,7 +240,31 @@ const handleSubmit = async (e) => {
             </button>
           </p>
 
-          <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Delete account</span>
+          <Popover>
+            <PopoverTrigger>
+              <button className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Remove Account</button>
+            </PopoverTrigger>
+            
+              <PopoverContent color='black' bg='blue.100' borderColor='black'>
+                <PopoverHeader pt={4} fontWeight='bold' border='0'>Confirmation</PopoverHeader>
+                <PopoverArrow bg='black'/>
+                <PopoverCloseButton />
+                <PopoverBody>
+                  Are you sure you want to delete the account?
+                </PopoverBody>
+                <PopoverFooter border='0'
+                               display='flex'
+                               alignItems='center'
+                               justifyContent='space-between'
+                               pb={4}>
+                  <div className="flex justify-end">
+                    <button disabled={loading} onClick={handleDelete} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">{loading ? "deleting..." : "Delete"}</button>
+                  </div>
+                </PopoverFooter>
+              </PopoverContent>
+            
+          </Popover>
+
           <Link to='/'><span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">List Property</span></Link>
           <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Add Property</span>
           <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Remove Property</span>

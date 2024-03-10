@@ -1,10 +1,10 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { useNavigate } from "react-router-dom"
 import {useToast} from '@chakra-ui/react'
 import {GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth'
 import { FcGoogle } from "react-icons/fc"
 import { useDispatch } from 'react-redux'
-import { signInSuccess } from '../myredux/user/userSlice'
+import { signInSuccess,defaultRed } from '../myredux/user/userSlice'
 import {app} from '../firebase'
 
 export default function GoogAuth() {
@@ -12,6 +12,8 @@ export default function GoogAuth() {
     const toast = useToast();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(()=>{dispatch(defaultRed())},[]);
 
     function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));

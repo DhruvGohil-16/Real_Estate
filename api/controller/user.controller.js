@@ -11,7 +11,7 @@ export const test = (req,res) => {
 export const updateUser = async (req,res,next) => {
     // console.log(req.user._id);
     // console.log(req.params.id);
-    if(req.user._id !== req.params.id) return next(errhandler(401,"you are not authorized to do so!!!"));
+    if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
     try {
         if(req.body.password){
             req.body.password = bcrypt.hashSync(req.body.password,10);
@@ -26,8 +26,10 @@ export const updateUser = async (req,res,next) => {
                 }
             },{new:true}
         );
+        console.log("user updated!!!");
 
         const {password,...rest} = updateUser._doc;
+        console.log(rest);
         res.status(200).json(rest);
     } catch (error) {
         next(error)

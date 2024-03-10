@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from "react-router-dom"
+import {useToast} from '@chakra-ui/react'
 import {GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth'
 import { FcGoogle } from "react-icons/fc"
 import { useDispatch } from 'react-redux'
@@ -8,8 +9,14 @@ import {app} from '../firebase'
 
 export default function GoogAuth() {
 
+    const toast = useToast();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
     const handleGoogleLogin = async () => {
         try {
             const provider = new GoogleAuthProvider();
@@ -31,6 +38,16 @@ export default function GoogAuth() {
 
             const data = await res.json();
 
+            await delay(2000);
+
+            toast({
+            title: "Welcome to DrState's family!!!",
+            description: "Your account created successfully.",
+            status: 'success',
+            duration: 4000,
+            position: 'top',
+            isClosable: true,
+            });
             dispatch(signInSuccess(data));
             navigate('/');
 

@@ -11,6 +11,8 @@ export const verifyToken = (req,res,next) => { //we need to add package cookie p
         if(err) return next(errhandler(403,"forbidden"));
 
         req.user = user;
+        console.log("User verified!!!");
+        console.log(user);
         next();
     });
 }

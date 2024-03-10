@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
+import {useToast} from '@chakra-ui/react'
 import Header from '../components/Header'
 import '../App.css'
-import GoogAuth from '../components/GoogAuth';
+import GoogAuth from '../components/GoogAuth'
 
 export default function SignUp() {
 
-  
   const [email,setEmail] = useState(null);
   const [username,setUsername] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,7 +19,8 @@ export default function SignUp() {
     password:"",
     email:""
   })
-  
+  const toast = useToast();
+
   function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -69,8 +70,6 @@ export default function SignUp() {
       body: JSON.stringify(formData), // Convert FormData to JSON
     });
     console.log("called fetch");
-
-    await delay(1000);
     
     const data = await res.json();  //get json response in data
 
@@ -103,8 +102,17 @@ export default function SignUp() {
         setUsername(null);
         setLoading(false);
         setConfirmPasswordMessage(null);
+
         await delay(1000);
+
         navigate('/sign-in');
+        toast({
+          title: 'Account created',
+          description: "Your account created successfully.",
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
+        });
         return;
       }
     } catch (error) {

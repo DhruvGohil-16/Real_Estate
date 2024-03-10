@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
+import {useToast} from '@chakra-ui/react'
 import {
   getDownloadURL,
   getStorage,
@@ -9,27 +10,35 @@ import {
 import { app } from '../firebase';
 import Header from '../components/Header'
 import { Link } from 'react-router-dom';
+import { updateStart,updateFailure,updateSuccess } from '../myredux/user/userSlice.js';
 
 export default function Profile() {
 
-  const {currentUser} = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const imgBrowse = useRef(null);
   const [file,setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
+  const [fileError,setFileError] = useState(null);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [error,setError] = useState(null);
-  console.log(file);
+  const dispatch = useDispatch();
+  const toast = useToast();
+
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
     }
   }, [file]);
 
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   const handleFileUpload = (file) => {
     if (file.size > 3 * 1024 * 1024) { // 3 MB in bytes
       setFileUploadError(true);
-      setError("File size exceeds 3MB limit");
+      setFileError("File size exceeds 3MB limit");
       return; // Stop further execution
     }
     const storage = getStorage(app);
@@ -47,55 +56,100 @@ export default function Profile() {
 //       }
 //     })
 //     .then(() => {
-//       setError('Image uploaded successfully!!!');
-//     })
-//     .catch((error) => {
-//       setFileUploadError(true);
-//       setError(error);
-//     });
-// };
-
-// const uploadFile = (storageRef, file) => {
-//   const uploadTask = uploadBytesResumable(storageRef, file);
-
-//   uploadTask.on(
-//     'state_changed',
-//     (snapshot) => {
-//       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-//       setFilePerc(Math.round(progress));
-//     },
-//     (error) => {
-//       setFileUploadError(true);
-//       setError(error);
+  //       setFileError('Image uploaded successfully!!!');
+  //     })
+  //     .catch((error) => {
+    //       setFileUploadError(true);
+    //       setFileError(error);
+    //     });
+    // };
+    
+    // const uploadFile = (storageRef, file) => {
+      //   const uploadTask = uploadBytesResumable(storageRef, file);
+      
+      //   uploadTask.on(
+        //     'state_changed',
+        //     (snapshot) => {
+          //       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          //       setFilePerc(Math.round(progress));
+          //     },
+          //     (error) => {
+            //       setFileUploadError(true);
+//       setFileError(error);
 //     }
 //   );
 
 //   return uploadTask;
 // };
-    const uploadTask = uploadBytesResumable(storageRef, file);
+const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setFilePerc(Math.round(progress));
-      },
-      (error) => {
-        setFileUploadError(true);
-        setError(error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              setFormData({ ...formData, profilePic: downloadURL });
-              setError('Image uploaded successfully!!!');
-              setFileUploadError(false); // Reset error state on successful upload
-          }
-        );
-      }
+uploadTask.on(
+  'state_changed',
+  (snapshot) => {
+    const progress =
+    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    setFilePerc(Math.round(progress));
+  },
+  (error) => {
+    setFileUploadError(true);
+    setFileError(error);
+  },
+  () => {
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      setFormData({ ...formData, profilePic: downloadURL });
+      setFileError('Image uploaded successfully!!!');
+      setFileUploadError(false); // Reset error state on successful upload
+    }
     );
-  };
+  }
+  );
+};
 
+const handleChange = (e) => {
+  setFormData({ ...formData, [e.target.id]: e.target.value });
+}
+
+const handleSubmit = async (e) => {
+
+  e.preventDefault();
+  setFileError("");
+  dispatch(updateStart());
+  console.log(formData);
+  try {
+    const res = await fetch(`./api/user/update/${currentUser._id}`,{
+      // function is used to send an asynchronous HTTP request to the server's apdate API endpoint ("./api/user/update/id")
+      method: "POST", // Adjust the HTTP method based on your API endpoint requirements
+      headers: {
+        "Content-Type": "application/json", //format of the request body
+      },
+      body: JSON.stringify(formData), // Convert signInData to JSON
+    });
+
+      const data = await res.json(); //get json response in data
+
+      // console.log(data);
+
+      if (data.success === false) {
+        dispatch(updateFailure(data.message));
+        return;
+      } 
+        await delay(2000);
+        toast({
+          title: 'Profile updated',
+          description: "Your profile updated successfully.",
+          status: 'success',
+          duration: 4000,
+          isClosable: true,
+          });
+
+        dispatch(updateSuccess(data));
+
+        
+      } catch (error) {
+    dispatch(updateFailure(error.message));
+  }
+
+}
   return (
     <div className="ty:fixed df:static">
 
@@ -104,8 +158,8 @@ export default function Profile() {
       </div>
       <div className="flex items-center justify-center backdrop-blur-sm">
         <div className='w-full max-w-md p-8 -mt-8 overflow-y-auto bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl'>
-          <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">Dr.Estate Profile</h1>
-          <form autoComplete="off">
+          <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-4">Dr.Estate Profile</h1>
+          <form onSubmit={handleSubmit} autoComplete="off">
             <div className='mb-4 cursor-pointer flex justify-center flex-col'>
               
               <input onChange={(e)=>setFile(e.target.files[0])}
@@ -121,7 +175,7 @@ export default function Profile() {
                   <span className='text-slate-700'>{`Uploading ${filePerc}%`}</span>
                 ) : filePerc === 100 ? (
                   <>
-                    <span className='text-green-700'>{error}</span>
+                    <span className='text-green-700'>{fileError}</span>
                   </>
                 ) : (
                   ''
@@ -129,12 +183,16 @@ export default function Profile() {
               </p>
 
               <label htmlFor="username" className="text-gray-800 block my-3 cursor-pointer">Username</label>
-              <input type="text" value={currentUser.username} placeholder='username' id='username' className="w-full px-4 py-2 border rounded 
+              <input type="text"defaultValue={currentUser.username} placeholder='username' id='username'  autoComplete="on"
+                     onChange={handleChange}
+                     className="w-full px-4 py-2 border rounded 
                               focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
                             hover:border-blue-500"  />
 
-              <label htmlFor="username" className="text-gray-800 block my-3 cursor-pointer">Email</label>
-              <input type="email" value={currentUser.email} placeholder='email' id='email' className="w-full px-4 py-2 border rounded 
+              <label htmlFor="email" className="text-gray-800 block my-3 cursor-pointer">Email</label>
+              <input type="email" defaultValue={currentUser.email} placeholder='email' id='email' autoComplete="on"
+                     onChange={handleChange}
+                     className="w-full px-4 py-2 border rounded 
                               focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
                             hover:border-blue-500"  />
 
@@ -142,10 +200,10 @@ export default function Profile() {
               <input type="text" placeholder='password' id='password' className="w-full px-4 py-2 border rounded 
                               focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
                             hover:border-blue-500" />
-              <button className="w-full mt-4 mb-2 bg-blue-500 text-white px-4 py-2 rounded focus:outline-none focus:shadow-outline">Update Info</button>
+              <button disabled={loading} type='submit' className="w-full mt-4 mb-2 bg-blue-500 text-white px-4 py-2 rounded focus:outline-none focus:shadow-outline" >{loading ? "updating..." : "Update Info"}</button>
             </div>
           </form>
-          <p className="m-3 text-red-600 text-sm"></p>
+          <p className="m-3 text-red-600 text-sm">{error}</p>
           <p className="m-4 text-gray-600 text-sm text-center">
             Want to logout ?{" "}
             <button>

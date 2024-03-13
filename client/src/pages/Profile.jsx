@@ -11,7 +11,7 @@ import {
 import { app } from '../firebase';
 import Header from '../components/Header'
 import { Link } from 'react-router-dom';
-import { updateStart,updateFailure,updateSuccess, deleteStart, deleteFailure, deleteSuccess, defaultRed } from '../myredux/user/userSlice.js';
+import { updateStart,updateFailure,updateSuccess, deleteStart, deleteFailure, deleteSuccess, defaultRed, signOutStart, signOutFailure, signOutSuccess } from '../myredux/user/userSlice.js';
 
 export default function Profile() {
 
@@ -24,7 +24,6 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
   const toast = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(defaultRed());
@@ -179,6 +178,30 @@ const handleDelete = async (e) => {
     dispatch(deleteFailure(error.message));
   };
 }
+
+const handleSignOut = async () =>{
+  dispatch(signOutStart());
+  try {
+    const res = await fetch('/api/auth/sign-out');
+    const data = await res.json();
+    if (data.success === false) {
+      dispatch(signOutFailure(data.message));
+      return;
+    }
+    
+    dispatch(signOutSuccess(data));
+    toast({
+      title: 'Account logged out',
+      description: "You have logged out successfully.",
+      status: 'success',
+      duration: 4000,
+      isClosable: true,
+    });
+  } catch (error) {
+    dispatch(signOutFailure(data.message));
+  }
+}
+
   return (
     <div className="ty:fixed df:static">
 
@@ -235,7 +258,7 @@ const handleDelete = async (e) => {
           <p className="m-3 text-red-600 text-sm">{error}</p>
           <p className="m-4 text-gray-600 text-sm text-center">
             Want to logout ?{" "}
-            <button>
+            <button onClick={handleSignOut}>
               <span className="text-blue-600">logout</span>
             </button>
           </p>

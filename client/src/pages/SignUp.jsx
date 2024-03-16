@@ -4,6 +4,7 @@ import {useToast} from '@chakra-ui/react'
 import Header from '../components/Header'
 import '../App.css'
 import GoogAuth from '../components/GoogAuth'
+import MyFooter from '../components/MyFooter'
 
 export default function SignUp() {
 
@@ -130,8 +131,8 @@ export default function SignUp() {
         <Header/>
       </div>
 
-      <div className='flex items-center justify-center backdrop-blur-sm'>
-        <div className="w-full max-w-md h-screen -mt-10 p-8 overflow-y-auto bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl">
+      <div className='flex items-center h-auto justify-center backdrop-blur-sm'>
+        <div className="w-full max-w-md -mt-10 p-8 bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl">
           <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">Welcome to Dr.Estate</h1>
           
           <form autoComplete='off' onSubmit={handleSubmit}>
@@ -197,6 +198,7 @@ export default function SignUp() {
 
         </div>
       </div>
+      <MyFooter/>
     </div>
   ) 
 }

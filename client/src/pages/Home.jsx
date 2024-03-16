@@ -1,7 +1,8 @@
 import React from 'react'
 import { FaInstagram, FaLinkedin, FaTwitter, FaPhone } from 'react-icons/fa';
 import Header from '../components/Header'
-import About from './About'
+import MyFooter from '../components/MyFooter';
+import ContactUs from './ContactUs';
 
 export default function Home() {
   const properties = [
@@ -52,65 +53,40 @@ export default function Home() {
     <div>
       <Header/>
       <div>
-      <section id="home" className="relative bg-cover bg-center py-24">
-      <div className="absolute inset-0 bg-gradient-to-b from-black to-transparent opacity-75"></div>
-      <div className="container mx-auto relative z-10 text-center">
-        <h1 className="text-5xl md:text-6xl text-white font-bold leading-tight mb-4">Welcome to our Real Estate Website</h1>
-        <p className="text-lg text-white mb-8">Find your dream home with us</p>
-        <a href="#properties" className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out">View Properties</a>
-      </div>
-    </section>
+        <section id="home" className="relative bg-cover bg-center py-24">
+          <div className="absolute inset-0 bg-gradient-to-b from-black to-transparent opacity-75"></div>
+          <div className="container mx-auto relative z-10 text-center">
+            <h1 className="text-5xl md:text-6xl text-white font-bold leading-tight mb-4">Welcome to our Real Estate Website</h1>
+            <p className="text-lg text-white mb-8">Find your dream home with us</p>
+            <a href="#properties" className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out">View Properties</a>
+          </div>
+        </section>
 
-    <section id="properties" className="py-16 m-2 bg-gray-100">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Featured Properties</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map(property => (
-            <div key={property.id} className="group bg-white rounded-lg overflow-hidden shadow-md relative">
-              <img src={property.image} alt={property.title} className="w-full h-64 object-cover object-center transition duration-300 ease-in-out transform group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
-                <div className="text-center text-white">
-                  <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
-                  <p className="text-gray-200">{property.description}</p>
-                  <a href="#" className="block mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-center font-semibold transition duration-300 ease-in-out">View Property</a>
+        <section id="properties" className="py-16 m-2 bg-gray-100">
+          <div className="container mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-8">Featured Properties</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {properties.map(property => (
+                <div key={property.id} className="group bg-white rounded-lg overflow-hidden shadow-md relative">
+                  <img src={property.image} alt={property.title} className="w-full h-64 object-cover object-center transition duration-300 ease-in-out transform group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
+                    <div className="text-center text-white">
+                      <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
+                      <p className="text-gray-200">{property.description}</p>
+                      <a href="#" className="block mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-center font-semibold transition duration-300 ease-in-out">View Property</a>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
+          </div>
+        </section>
 
-  <section id="about" className="bg-gray-200 py-16 text-center">
-    <div className="container mx-auto">
-      <About/>
-      <a href="#contact" className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Contact Us</a>
-    </div>
-  </section>
+        <ContactUs/>
 
-  <section id="contact" className="bg-gray-200 py-16 text-center">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold mb-8">Contact Us</h2>
-        <p className="text-lg text-gray-700 mb-8">Get in touch with us for any inquiries or to schedule a viewing.</p>
-        <div className="flex justify-center items-center space-x-4 mb-8">
-          <a href="#" className="text-blue-500 hover:text-blue-600">
-            <FaInstagram size={32} />
-          </a>
-          <a href="#" className="text-blue-500 hover:text-blue-600">
-            <FaLinkedin size={32} />
-          </a>
-          <a href="#" className="text-blue-500 hover:text-blue-600">
-            <FaTwitter size={32} />
-          </a>
-        </div>
-        <p className="text-lg text-gray-700 mb-8">Customer Care Support: <a href="tel:+1234567890" className="text-blue-500 hover:text-blue-600"><FaPhone /> +1 (234) 567-890</a></p>
-      </div>
-    </section>
-
-  <footer className="bg-gray-800 text-white py-4 text-center">
-    <p>&copy; 2024 Real Estate Company. All rights reserved.</p>
-  </footer>
+        <MyFooter/>
+  
       </div>
     </div>
   )

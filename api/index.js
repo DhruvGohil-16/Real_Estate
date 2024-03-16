@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userrouter from './routes/user.route.js';
 import authrouter from './routes/auth.route.js';
+import listrouter from './routes/list.route.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -28,9 +29,11 @@ app.use(express.json());    //enable to get json data to server
 
 app.use(cookieParser());
 
-app.use('/api/user',userrouter);    //user test route
+app.use('/api/user',userrouter);    //user route
 
 app.use('/api/auth',authrouter);    //authentication route "sign-up"
+
+app.use('/api/list',listrouter);    //listing route
 
 app.use((err,req,res,next) => {    //error handling middleware
     const statusCode = err.statusCode || 500;

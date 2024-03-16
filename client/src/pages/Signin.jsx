@@ -5,6 +5,7 @@ import { defaultRed, signInFailure,signInStart,signInSuccess } from "../myredux/
 import Header from "../components/Header";
 import "../App.css";
 import GoogAuth from "../components/GoogAuth";
+import MyFooter from "../components/MyFooter";
 
 export default function Signin() {
   const [signInData, setSignInData] = useState({
@@ -162,6 +163,7 @@ export default function Signin() {
           </button>
         </div>
       </div>
+      <MyFooter/>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import { useNavigate } from 'react-router-dom';
-import {useToast,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverBody,PopoverFooter,PopoverArrow,PopoverCloseButton,PopoverAnchor} from '@chakra-ui/react'
+import {useToast,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverBody,PopoverFooter,PopoverArrow,PopoverCloseButton} from '@chakra-ui/react'
 import {
   getDownloadURL,
   getStorage,
@@ -12,6 +11,7 @@ import { app } from '../firebase';
 import Header from '../components/Header'
 import { Link } from 'react-router-dom';
 import { updateStart,updateFailure,updateSuccess, deleteStart, deleteFailure, deleteSuccess, defaultRed, signOutStart, signOutFailure, signOutSuccess } from '../myredux/user/userSlice.js';
+import MyFooter from '../components/MyFooter.jsx';
 
 export default function Profile() {
 
@@ -235,7 +235,7 @@ const handleSignOut = async () =>{
               </p>
 
               <label htmlFor="username" className="text-gray-800 block my-3 cursor-pointer">Username</label>
-              <input type="text"defaultValue={currentUser.username} placeholder='username' id='username'  autoComplete="on"
+              <input type="text" defaultValue={currentUser.username} placeholder='username' id='username'  autoComplete="on"
                      onChange={handleChange}
                      className="w-full px-4 py-2 border rounded 
                               focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
@@ -293,6 +293,7 @@ const handleSignOut = async () =>{
           <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Remove Property</span>
         </div>
       </div>
+      <MyFooter/>
     </div>
   )
 }

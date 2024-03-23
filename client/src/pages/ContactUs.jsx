@@ -112,7 +112,7 @@ const ContactUs = () => {
                 <span className="mb-4 block text-2xl text-gray-500 font-semibold text-primary">
                   Contact Us
                 </span>
-                <form>
+                <form autoComplete="off">
                   <input
                     type="text"
                     name="name"

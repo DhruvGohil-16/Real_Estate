@@ -39,15 +39,17 @@ import {
                             <div>
                                 <FooterTitle title="about" className="text-gray-700"/>
                                 <FooterLinkGroup col>
-                                <FooterLink href="#" className="text-gray-800">Flowbite</FooterLink>
-                                <FooterLink href="#" className="text-gray-700">Tailwind CSS</FooterLink>
+                                <FooterLink href="#" className="text-gray-800">Dr.Estate</FooterLink>
+                                <FooterLink href="#" className="text-gray-700">Estate's Group</FooterLink>
                                 </FooterLinkGroup>
                             </div>
                             <div>
                                 <FooterTitle title="Follow us" className="text-gray-800"/>
                                 <FooterLinkGroup col>
-                                <FooterLink href="#" className="text-gray-700">Github</FooterLink>
-                                <FooterLink href="#" className="text-gray-700">Discord</FooterLink>
+                                <FooterLink href="#" className="text-gray-700">LinkedIn</FooterLink>
+                                <FooterLink href="#" className="text-gray-700">Twitter</FooterLink>
+                                <FooterLink href="#" className="text-gray-700">Instagram</FooterLink>
+                                <FooterLink href="#" className="text-gray-700">Facebook</FooterLink>
                                 </FooterLinkGroup>
                             </div>
                             <div>

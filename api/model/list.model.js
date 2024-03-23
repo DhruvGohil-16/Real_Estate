@@ -88,6 +88,10 @@ const userlisting = new mongoose.Schema({
     builtDate: {
         type: Date,
         required: true
+    },
+    reqAccepted:{
+        type: Boolean,
+        default: false
     }
   }, { timestamps: true });
 

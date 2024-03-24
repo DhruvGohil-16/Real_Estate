@@ -1,3 +1,4 @@
+import { boolean } from "joi";
 import mongoose from "mongoose";
 
 const userlisting = new mongoose.Schema({
@@ -32,7 +33,7 @@ const userlisting = new mongoose.Schema({
         required: true 
     },
     offer: {
-        type:Boolean,
+        type:boolean,
         required: true
     },
     address: {
@@ -69,7 +70,7 @@ const userlisting = new mongoose.Schema({
         required:true
     },
     parking: {
-        type: Boolean,
+        type: boolean,
     },
     noOfVehicle: {
         type: Number,
@@ -81,6 +82,9 @@ const userlisting = new mongoose.Schema({
         type: Array,
         default: 'no'
     },
+    furnished: {
+        type: boolean,
+    },
     listedDate: {
         type: Date,
         default: Date.now
@@ -90,7 +94,7 @@ const userlisting = new mongoose.Schema({
         required: true
     },
     reqAccepted:{
-        type: Boolean,
+        type: boolean,
         default: false
     }
   }, { timestamps: true });

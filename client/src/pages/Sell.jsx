@@ -25,10 +25,14 @@ export default function Sell() {
     const [showFileInput, setShowFileInput] = useState(false);
     const [files,setFiles] = useState([]);
     const [imageUploadError, setImageUploadError] = useState("");
+    const [priceError, setPriceError] = useState("");
     const [error, setError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imgCount,setImgCount] = useState(0);
+    const [showDis,setShowDis] = useState(false);
+    const [price,setPrice] = useState(0.00);
+    const [discountPrice,setDiscountPrice] = useState(0.00);
 
     const List = {
         state:"",
@@ -43,6 +47,7 @@ export default function Sell() {
         address: "",
         bedrooms: 1,
         bathrooms: 1,
+        furnished:false,
         area: 220,
         price: 0.00,
         discountPrice: 0.00,
@@ -269,12 +274,28 @@ export default function Sell() {
     }
 
     const handlePriceChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,price:e}});
-        console.log(formData);
+        setPrice(e);
+        if(e<discountPrice){
+            setFormData({...formData});
+            setPriceError("price must be more then discount price!!!");
+            console.log("inside");
+        }
+        else{
+            setPriceError("");
+            setFormData({...formData, List1:{...formData.List1,price:e}});
+        }
     }
 
     const handleDiscountPriceChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,discountPrice:e}});
+        setDiscountPrice(e);
+        if(e>price){
+            setFormData({...formData});
+            setPriceError("discount must be less then actual price!!!");
+        }
+        else{
+            setFormData({...formData, List1:{...formData.List1,discountPrice:e}});
+            setPriceError("");
+        }
         console.log(formData);
     }
 
@@ -308,6 +329,11 @@ export default function Sell() {
     const handleChange = (e) => {
         const {  name, value, type, checked } = e.target;
         if (type === 'checkbox') {
+            if(name=='offer' && checked)
+                setShowDis(true);
+            else if(name=='offer' && !checked)
+                setShowDis(false);
+            console.log(showDis);
             setFormData({ ...formData, List1: { ...formData.List1, [name]: checked } });
         } else{       
             if (name === "country") {
@@ -417,6 +443,8 @@ export default function Sell() {
 
         if(formData.List1.images.length<imgCount)
             setError("Upload all the images!!!");
+        else
+            setError('');
         console.log(formData);
     };
 
@@ -477,24 +505,26 @@ export default function Sell() {
                         <div>
                             <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
                             <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} precision={2} step={0.01}>
-                                <NumberInputField />
+                                <NumberInputField value={formData.List1.price}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
                                     <NumberDecrementStepper/>
                                 </NumberInputStepper>
                             </NumberInput>
                         </div>
-                        <div>
+                        {showDis && <div>
                             <label htmlFor="discountPrice" className="block text-sm font-medium text-gray-700">Discount Price</label>
                             <NumberInput onChange={handleDiscountPriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} precision={2} step={0.01}>
-                                <NumberInputField />
+                                <NumberInputField value={formData.List1.discountPrice}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
                                     <NumberDecrementStepper/>
                                 </NumberInputStepper>
                             </NumberInput>
-                        </div>
+                        </div>}
                     </div>
+
+                    <p className='m-1 text-red-600 text-sm'>{priceError}</p>
 
                     <div className="my-4">
                         <div className="h-px bg-white dark:bg-gray-700" />
@@ -651,9 +681,15 @@ export default function Sell() {
 
                     <FooterDivider/>
 
-                    <div className="mb-4">
-                        <label htmlFor="offer" className="block text-sm font-medium text-gray-700">Offer</label>
-                        <input type="checkbox" required id="offer" name="offer" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                    <div className="mb-4 grid grid-cols-2">
+                        <div className='my-1'>
+                            <label htmlFor="offer" className="block text-sm font-medium text-gray-700">Offer</label>
+                            <input type="checkbox" required id="offer" name="offer" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                        </div>
+                        <div className='my-1'>
+                            <label htmlFor="furnished" className="block text-sm font-medium text-gray-700">furnished</label>
+                            <input type="checkbox" required id="furnished" name="furnished" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                        </div>
                     </div>
 
                     <FooterDivider/>

@@ -3,6 +3,7 @@ import express from 'express';  //make type in package.json as "module"
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userrouter from './routes/user.route.js';
+import agentrouter from './routes/agent.route.js';
 import authrouter from './routes/auth.route.js';
 import listrouter from './routes/list.route.js';
 import cookieParser from 'cookie-parser';
@@ -31,7 +32,9 @@ app.use(cookieParser());
 
 app.use('/api/user',userrouter);    //user route
 
-app.use('/api/auth',authrouter);    //authentication route "sign-up"
+app.use('/api/agent',agentrouter);    //agent route
+
+app.use('/api/auth',authrouter);    //authentication route
 
 app.use('/api/list',listrouter);    //listing route
 

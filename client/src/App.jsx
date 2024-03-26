@@ -11,15 +11,34 @@ import Profile from './pages/Profile';
 import About from './pages/About';
 import PrivateRoute from './components/privateRoute';
 import Sell from './pages/Sell';
+import AgentDashboard from './pages/AgentDashboard';
+import PrivateRoute2 from './components/PrivateRoute2';
+import PrivateRoute3 from './components/PrivateRoute3';
 
 export default function App() {
 
   return (
   <Router>
     <Routes>
-      <Route path='/' element={<Home/>} />
-      <Route path='/sign-up' element={<SignUp/>} />
-      <Route path='/sign-in' element={<Signin/>} />
+
+      <Route element={<PrivateRoute3 from="home"/>}>
+        <Route path='/' element={<Home/>} />
+      </Route>
+
+      <Route element={<PrivateRoute3 from="sign-up"/>}>
+        <Route path='/sign-up' element={<SignUp/>} />
+      </Route>
+
+      <Route element={<PrivateRoute3 from="sign-in"/>}>
+        <Route path='/sign-in' element={<Signin/>} />
+      </Route>
+      <Route element={<PrivateRoute2 from="Agent-dashboard"/>}>
+        <Route path='/agent-dashboard' element={<AgentDashboard/>}/>
+      </Route>
+
+      <Route element={<PrivateRoute from="profile"/>}>
+        <Route path='/profile' element={<Profile/>} />
+      </Route>
       <Route element={<PrivateRoute from="sell"/>}>
         <Route path='/sell' element={<Sell />}/>
       </Route>
@@ -29,9 +48,7 @@ export default function App() {
       <Route element={<PrivateRoute from="rent"/>}>
         <Route path='/rent' element={<Sell />}/>
       </Route>
-      <Route element={<PrivateRoute from="profile"/>}>
-        <Route path='/profile' element={<Profile/>} />
-      </Route>
+
       <Route path='/about' element={<About/>} />
     </Routes>
   </Router>

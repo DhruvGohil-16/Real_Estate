@@ -35,6 +35,7 @@ export default function GoogAuth() {
                     name:result.user.displayName,
                     email:result.user.email,
                     photo:result.user.photoURL,
+                    role:'user',
                   }), // Convert FormData to JSON
             });
 
@@ -44,7 +45,7 @@ export default function GoogAuth() {
 
             toast({
             title: "Welcome to DrState's family!!!",
-            description: "Your account created successfully.",
+            description: "Your account created/logged-in successfully.",
             status: 'success',
             duration: 4000,
             position: 'top',

@@ -5,12 +5,7 @@ const userlisting = new mongoose.Schema({
         type: String,
         required: true
     },
-    propertyId:{
-        type: String,
-        required: true,
-        unique: true
-    },
-    user:{
+     user:{
         type: String,
         required: true
     },
@@ -41,8 +36,7 @@ const userlisting = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     country: {
         type: String,
@@ -70,8 +64,7 @@ const userlisting = new mongoose.Schema({
     },
     images: {
         type:Array,
-        required:true,
-        unique: true
+        required:true
     },
     parking: {
         type: Boolean,
@@ -97,12 +90,8 @@ const userlisting = new mongoose.Schema({
         type: Date,
         required: true
     },
-    reqAccepted:{
-        type: Boolean,
-        default: false
-    }
   }, { timestamps: true });
 
-const list = mongoose.model('userlist',userlisting);
+const permlist = mongoose.model('userlist',userlisting);
 
-export default list;
+export default permlist;

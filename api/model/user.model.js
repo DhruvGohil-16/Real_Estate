@@ -1,8 +1,5 @@
-import { Timestamp } from "bson";
 import mongoose from "mongoose";
 import Jwt from "jsonwebtoken";
-import Joi from "joi";
-import JoiPasswordComplexity from "joi-password-complexity";
 
 const userSchema = new mongoose.Schema({    //user attribute to be stored in database
         username : {
@@ -22,6 +19,10 @@ const userSchema = new mongoose.Schema({    //user attribute to be stored in dat
             required : true,
             minlength : 8,
         },
+        role:{
+            type: String,
+            required: true
+        },
         profilePic :{
             type : String,
             default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk8Gl9eN3We2TcCYbPyAxqG6SqN02Wey-1vB0iuhZfyw&s",
@@ -36,15 +37,5 @@ const userSchema = new mongoose.Schema({    //user attribute to be stored in dat
     };
 
 const user = mongoose.model('User',userSchema);
-
-const validate = (data) => {
-    console.log("inside validate");
-    const schema = Joi.object({
-        username:Joi.string().required().label("username"),
-        email:Joi.string().required().label("email"),
-        password:JoiPasswordComplexity().required().label("password"),
-    });
-    return schema.validate(data);
-};
 
 export default user;

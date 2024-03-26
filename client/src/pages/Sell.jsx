@@ -25,14 +25,11 @@ export default function Sell() {
     const [showFileInput, setShowFileInput] = useState(false);
     const [files,setFiles] = useState([]);
     const [imageUploadError, setImageUploadError] = useState("");
-    const [priceError, setPriceError] = useState("");
     const [error, setError] = useState("");
     const [uploading, setUploading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imgCount,setImgCount] = useState(0);
     const [showDis,setShowDis] = useState(false);
-    const [price,setPrice] = useState(0.00);
-    const [discountPrice,setDiscountPrice] = useState(0.00);
 
     const List = {
         state:"",
@@ -41,12 +38,13 @@ export default function Sell() {
 
     const List1 = {
         propertyName: "",
-        userContact: "",
+        propertId: "",
         propertyType: "",
         description: "",
         address: "",
         bedrooms: 1,
         bathrooms: 1,
+        sellType:"sell",
         furnished:false,
         area: 220,
         price: 0.00,
@@ -274,29 +272,11 @@ export default function Sell() {
     }
 
     const handlePriceChange = (e) => {
-        setPrice(e);
-        if(e<discountPrice){
-            setFormData({...formData});
-            setPriceError("price must be more then discount price!!!");
-            console.log("inside");
-        }
-        else{
-            setPriceError("");
-            setFormData({...formData, List1:{...formData.List1,price:e}});
-        }
+        setFormData({...formData, List1:{...formData.List1,price:e}});
     }
 
     const handleDiscountPriceChange = (e) => {
-        setDiscountPrice(e);
-        if(e>price){
-            setFormData({...formData});
-            setPriceError("discount must be less then actual price!!!");
-        }
-        else{
-            setFormData({...formData, List1:{...formData.List1,discountPrice:e}});
-            setPriceError("");
-        }
-        console.log(formData);
+        setFormData({...formData, List1:{...formData.List1,discountPrice:e}});
     }
 
     const handleBedroomsChange = (e) => {
@@ -330,11 +310,17 @@ export default function Sell() {
         const {  name, value, type, checked } = e.target;
         if (type === 'checkbox') {
             if(name=='offer' && checked)
+            {
+                setFormData({...formData,List1:{...formData.List1,discountPrice:0,offer:checked}});
                 setShowDis(true);
+            }
             else if(name=='offer' && !checked)
+            {
+                setFormData({...formData,List1:{...formData.List1,discountPrice:0,offer:checked}});
                 setShowDis(false);
-            console.log(showDis);
-            setFormData({ ...formData, List1: { ...formData.List1, [name]: checked } });
+            }
+            else
+                setFormData({ ...formData, List1: { ...formData.List1, [name]: checked } });
         } else{       
             if (name === "country") {
                 setFormData({ ...formData, country: value, List: { state: "", city: "" } });
@@ -462,8 +448,8 @@ export default function Sell() {
                             <input type="text" id="propertyName" name="propertyName" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
                         </div>
                         <div>
-                            <label htmlFor="userConatact" className="block text-sm font-medium text-gray-700">Contact No.</label>
-                            <input type="number" id="userContact" name="userContact" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
+                            <label htmlFor="userConatact" className="block text-sm font-medium text-gray-700">Property Id</label>
+                            <input type="text" id="propertId" name="propertId" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
                         </div>
                     </div>
 
@@ -504,7 +490,7 @@ export default function Sell() {
                     <div className="mb-4 grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
-                            <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} precision={2} step={0.01}>
+                            <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={formData.List1.discountPrice} precision={2} step={0.01}>
                                 <NumberInputField value={formData.List1.price}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
@@ -514,7 +500,7 @@ export default function Sell() {
                         </div>
                         {showDis && <div>
                             <label htmlFor="discountPrice" className="block text-sm font-medium text-gray-700">Discount Price</label>
-                            <NumberInput onChange={handleDiscountPriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} precision={2} step={0.01}>
+                            <NumberInput onChange={handleDiscountPriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} max={formData.List1.price} precision={2} step={0.01}>
                                 <NumberInputField value={formData.List1.discountPrice}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
@@ -523,8 +509,6 @@ export default function Sell() {
                             </NumberInput>
                         </div>}
                     </div>
-
-                    <p className='m-1 text-red-600 text-sm'>{priceError}</p>
 
                     <div className="my-4">
                         <div className="h-px bg-white dark:bg-gray-700" />

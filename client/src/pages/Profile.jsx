@@ -205,11 +205,11 @@ const handleSignOut = async () =>{
   return (
     <div className="ty:fixed df:static">
 
-      <div className="blur-sm">
+      <div>
         <Header />
       </div>
-      <div className="flex items-center justify-center backdrop-blur-sm">
-        <div className='w-full max-w-md p-8 -mt-8 overflow-y-auto bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl'>
+      <div className="flex min-h-auto items-center justify-center bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent">
+        <div className='w-full max-w-md m-10 mb-20 p-8 overflow-y-auto bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl'>
           <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-4">Dr.Estate Profile</h1>
           <form onSubmit={handleSubmit} autoComplete="off">
             <div className='mb-4 cursor-pointer flex justify-center flex-col'>

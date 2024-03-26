@@ -8,14 +8,18 @@ const initialState = {
 
 const userSlice = createSlice({
     name:'user',
-    initialState,
+    initialState:{
+        role: '',
+    },
     reducers:{
         signInStart:(state)=>{
             state.error = null;
             state.loading = true;
         },
         signInSuccess:(state,action)=>{
+            console.log(action.payload.role);
             state.currentUser = action.payload;
+            state.role = action.payload.role;
             console.log(state.currentUser);
             state.loading=false;
             state.error=null;
@@ -44,6 +48,7 @@ const userSlice = createSlice({
         },
         deleteSuccess: (state) => {
             state.currentUser = null;
+            state.role = '';
             state.loading = false;
             state.error = null;
         },
@@ -56,6 +61,7 @@ const userSlice = createSlice({
         },
         signOutSuccess: (state) => {
             state.currentUser = null;
+            state.role = '';
             state.loading = false;
             state.error = null;
         },

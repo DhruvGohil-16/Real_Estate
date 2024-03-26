@@ -9,9 +9,8 @@ import {
     FooterTitle
   } from "flowbite-react"
   import {
-    BsDribbble,
+    BsLinkedin,
     BsFacebook,
-    BsGithub,
     BsInstagram,
     BsTwitter
   } from "react-icons/bs"
@@ -66,11 +65,10 @@ import {
                 <div className="w-full sm:flex sm:items-center sm:justify-between">
                     <FooterCopyright href="/" by="DrEstate™" year={2024} className="text-gray-800"/>
                     <div className="mt-4 flex space-x-8 sm:mt-0 sm:justify-center">
-                        <FooterIcon href="#" icon={BsFacebook} />
-                        <FooterIcon href="#" icon={BsInstagram} />
+                        <FooterIcon href="#" icon={BsLinkedin} />
                         <FooterIcon href="#" icon={BsTwitter} />
-                        <FooterIcon href="#" icon={BsGithub} />
-                        <FooterIcon href="#" icon={BsDribbble} />
+                        <FooterIcon href="#" icon={BsInstagram} />
+                        <FooterIcon href="#" icon={BsFacebook} />
                     </div>
                 </div>
             </div>

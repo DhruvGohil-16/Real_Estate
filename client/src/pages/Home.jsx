@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaInstagram, FaLinkedin, FaTwitter, FaPhone } from 'react-icons/fa';
 import Header from '../components/Header'
 import MyFooter from '../components/MyFooter';
 import ContactUs from './ContactUs';

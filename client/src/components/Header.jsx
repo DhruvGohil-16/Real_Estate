@@ -16,7 +16,7 @@ export default function Header() {
           <FooterBrand
                       href="/"
                       src="../favicon.ico"
-                      alt="Flowbite Logo"
+                      alt="Dr estate Logo"
           />
           <h1 className='font-bold text-2xl sm:text-3xl flex flex-wrap'>
 

@@ -1,10 +1,10 @@
 import express from 'express';
-import { verifyToken } from '../utils/verifyToken.js';
+import { verifyAgentToken } from '../utils/verifyToken.js';
+import { deleteagent, updateagent } from '../controller/agent.contoller.js';
 
 const router = express.Router();
 
-// router.get('/test',test);
-// router.post('/update/:id',verifyToken,updateagent);
-// router.delete('/delete/:id',verifyToken,deleteagent);
+router.post('/update/:id',verifyAgentToken,updateagent);
+router.delete('/delete/:id',verifyAgentToken,deleteagent);
 
 export default router;

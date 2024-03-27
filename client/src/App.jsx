@@ -14,6 +14,7 @@ import Sell from './pages/Sell';
 import AgentDashboard from './pages/AgentDashboard';
 import PrivateRoute2 from './components/PrivateRoute2';
 import PrivateRoute3 from './components/PrivateRoute3';
+import AgentProfile from './pages/AgentProfile';
 
 export default function App() {
 
@@ -32,8 +33,12 @@ export default function App() {
       <Route element={<PrivateRoute3 from="sign-in"/>}>
         <Route path='/sign-in' element={<Signin/>} />
       </Route>
+
       <Route element={<PrivateRoute2 from="Agent-dashboard"/>}>
         <Route path='/agent-dashboard' element={<AgentDashboard/>}/>
+      </Route>
+      <Route element={<PrivateRoute2 from="Agent-profile"/>}>
+        <Route path='/agent-profile' element={<AgentProfile/>}/>
       </Route>
 
       <Route element={<PrivateRoute from="profile"/>}>

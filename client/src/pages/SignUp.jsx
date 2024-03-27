@@ -366,7 +366,7 @@ export default function SignUp() {
               <TabPanel>
                 <>
                   <form autoComplete='off' onSubmit={handleAgentSubmit}>
-                  <div className="mb-4 cursor-pointer">
+                    <div className="mb-4 cursor-pointer">
                       <label htmlFor="agname" className="text-gray-800 block mb-2 cursor-pointer">Full name</label>
                       <input type="text" id="agname" name="agname" placeholder="Enter your full name" value={agentFormData.agname}
                               className="w-full px-4 py-2 border rounded 

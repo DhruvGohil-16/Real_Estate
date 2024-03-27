@@ -36,7 +36,7 @@ app.use('/api/agent',agentrouter);    //agent route
 
 app.use('/api/auth',authrouter);    //authentication route
 
-app.use('/api/list',listrouter);    //listing route
+app.use('/api/listing',listrouter);    //listing route
 
 app.use((err,req,res,next) => {    //error handling middleware
     const statusCode = err.statusCode || 500;

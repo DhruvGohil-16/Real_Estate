@@ -288,8 +288,8 @@ const handleSignOut = async () =>{
             
           </Popover>
 
-          <Link to='/'><span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">List Property</span></Link>
-          <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Add Property</span>
+          <Link to='/sell'><span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">List Property</span></Link>
+          <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Your Property</span>
           <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Remove Property</span>
         </div>
       </div>

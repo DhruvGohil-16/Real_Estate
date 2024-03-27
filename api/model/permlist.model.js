@@ -5,7 +5,12 @@ const userlisting = new mongoose.Schema({
         type: String,
         required: true
     },
-     user:{
+    propertyId:{
+        type: String,
+        required: true,
+        unique: true
+    },
+    user:{
         type: String,
         required: true
     },
@@ -28,7 +33,9 @@ const userlisting = new mongoose.Schema({
     },
     discountPrice:{
         type: Number, 
-        required: true 
+        required:  function() {
+            return this.offer !== false; // Set as required only when offer is available
+          }
     },
     offer: {
         type:Boolean,
@@ -90,6 +97,10 @@ const userlisting = new mongoose.Schema({
         type: Date,
         required: true
     },
+    reqAccepted:{
+        type: Number,
+        default: 0
+    }
   }, { timestamps: true });
 
 const permlist = mongoose.model('userlist',userlisting);

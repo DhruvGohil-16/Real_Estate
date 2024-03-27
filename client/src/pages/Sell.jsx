@@ -1,4 +1,5 @@
 import React,{ useState } from 'react'
+import {useSelector} from 'react-redux'
 import { app } from '../firebase'
 import {
     getDownloadURL,
@@ -19,6 +20,7 @@ import { FooterDivider } from 'flowbite-react';
 
 export default function Sell() {
 
+    const { currentUser} = useSelector((state) => state.user);
     const [maxDate, setMaxDate] = useState(getTodayDate());
     const [show,setShow] = useState(false);
     const [showList,setShowList] = useState(false);
@@ -26,6 +28,7 @@ export default function Sell() {
     const [files,setFiles] = useState([]);
     const [imageUploadError, setImageUploadError] = useState("");
     const [error, setError] = useState("");
+    const [loading,setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [imgCount,setImgCount] = useState(0);
@@ -38,7 +41,6 @@ export default function Sell() {
 
     const List1 = {
         propertyName: "",
-        propertId: "",
         propertyType: "",
         description: "",
         address: "",
@@ -427,10 +429,50 @@ export default function Sell() {
         count=count+formData.List1.bathrooms+formData.List1.bedrooms;
         setImgCount(count);
 
-        if(formData.List1.images.length<imgCount)
+        if(formData.List1.images.length<imgCount){
+            setLoading(true);
             setError("Upload all the images!!!");
-        else
-            setError('');
+        }
+        else{
+            try {
+                setError('');
+                setLoading(true);
+
+                const res = await fetch("./api/listing/addPropReq", {  // function is used to send an asynchronous HTTP request to the server's signup API endpoint ("./api/listing/addPropReq")
+                    method: "POST", // Adjust the HTTP method based on your API endpoint requirements
+                    headers: {
+                      "Content-Type": "application/json",  //format of the request body
+                  },
+                  body: JSON.stringify({...formData,user:currentUser.username}), // Convert FormData to JSON
+                });
+                console.log("called fetch");
+                
+                const data = await res.json();
+
+                setLoading(false);
+                if (data.success === false) {
+                    setError(data.message);
+                    setLoading(false);
+                }
+                else{
+                    
+                    await delay(1000);
+              
+                    navigate('/');
+                    toast({
+                      title: 'Listing request',
+                      description: "Your property listing request sent successfully.",
+                      status: 'success',
+                      duration: 6000,
+                      isClosable: true,
+                    });
+                    return;
+                }
+            } catch (error) {
+              setLoading(false);
+              setError(error.message);
+            }
+        }
         console.log(formData);
     };
 
@@ -439,17 +481,13 @@ export default function Sell() {
         <Header/>
 
         <div className="flex justify-left items-center bg-cover bg-no-repeat bg-[url('./src/background1.jpeg')]">
-            <div className="w-2/4 m-8 p-8 h-auto bg-white bg-opacity-50 shadow-md rounded-lg">
+            <div className="w-2/4 m-8 p-8 h-auto bg-white bg-opacity-45 shadow-md rounded-lg">
                 <h1 className="text-3xl font-bold mb-4">Create Listing</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4 grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">property-name</label>
                             <input type="text" id="propertyName" name="propertyName" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
-                        </div>
-                        <div>
-                            <label htmlFor="userConatact" className="block text-sm font-medium text-gray-700">Property Id</label>
-                            <input type="text" id="propertId" name="propertId" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
                         </div>
                     </div>
 
@@ -727,7 +765,7 @@ export default function Sell() {
 
                     <FooterDivider/>
 
-                    <button type="submit" className="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 focus:outline-none focus:shadow-outline">List property</button>
+                    <button type="submit" disabled={loading} className="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 focus:outline-none focus:shadow-outline">{loading ? 'sending request...' : 'List Property'}</button>
                     <p className='m-1 text-red-600 text-sm'>{error}</p>
                 </form>
 

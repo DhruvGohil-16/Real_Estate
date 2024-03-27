@@ -33,7 +33,9 @@ const userlisting = new mongoose.Schema({
     },
     discountPrice:{
         type: Number, 
-        required: true 
+        required:  function() {
+            return this.offer !== false; // Set as required only when offer is available
+          }
     },
     offer: {
         type:Boolean,
@@ -97,10 +99,6 @@ const userlisting = new mongoose.Schema({
         type: Date,
         required: true
     },
-    reqAccepted:{
-        type: Boolean,
-        default: false
-    }
   }, { timestamps: true });
 
 const list = mongoose.model('userlist',userlisting);

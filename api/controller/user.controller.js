@@ -48,4 +48,18 @@ export const deleteUser = async (req,res,next) => {
     } catch (error) {
         next(error);
     }
-} 
+}
+
+export const userListing = async (req,res,next) => {
+
+    if(req.user._id !== req.params.id) return next(errhandler(401,"*You can't view others listing so!!!"));
+
+    try {
+        const User = await user.findById(req.params.id);
+
+        res.status(200).json('User has been deleted!');
+
+    } catch (error) {
+        next(error);
+    }
+}

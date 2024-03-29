@@ -7,10 +7,13 @@ const userlisting = new mongoose.Schema({
     },
     propertyId:{
         type: String,
-        required: true,
-        unique: true
+        default:"defaultId"
     },
     user:{
+        type: String,
+        required: true
+    },
+    agent:{
         type: String,
         required: true
     },
@@ -22,20 +25,13 @@ const userlisting = new mongoose.Schema({
         type: String, 
         required: true 
     },
-    saleType: {
-        type:String,
-        enum: ['rent','sell'],
-        required:true
-    },
     price: { 
         type: Number, 
         required: true 
     },
     discountPrice:{
         type: Number, 
-        required:  function() {
-            return this.offer !== false; // Set as required only when offer is available
-          }
+        required: true
     },
     offer: {
         type:Boolean,
@@ -75,14 +71,9 @@ const userlisting = new mongoose.Schema({
         required:true,
         unique: true
     },
-    parking: {
-        type: Boolean,
-    },
     noOfVehicle: {
         type: Number,
-        required: function() {
-          return this.parking !== undefined; // Set as required only when parking is available
-        }
+        required: true
     },
     amenities: {
         type: Array,
@@ -91,14 +82,18 @@ const userlisting = new mongoose.Schema({
     furnished: {
         type: Boolean,
     },
-    listedDate: {
-        type: Date,
-        default: Date.now
-    },
     builtDate: {
-        type: Date,
+        type: String,
         required: true
     },
+    reqAccepted:{
+        type: Number,
+        default: 0
+    },
+    reqViewd:{
+        type: Boolean,
+        default: false
+    }
   }, { timestamps: true });
 
 const list = mongoose.model('userlist',userlisting);

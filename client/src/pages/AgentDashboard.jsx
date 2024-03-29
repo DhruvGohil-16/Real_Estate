@@ -63,7 +63,6 @@ export default function AgentDashboard() {
 
         </div>
       </div>
-      <ContactUs/>
       <MyFooter/>
     </div>
   );

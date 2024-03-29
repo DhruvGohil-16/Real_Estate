@@ -9,6 +9,7 @@ export default function PrivateRoute({ from }) {
 
   // Display toast message based on the source URL
   useEffect(() => {
+    console.log("private route called");
     if (!currentUser || role==='agent') {
       console.log(currentUser);
       toast({

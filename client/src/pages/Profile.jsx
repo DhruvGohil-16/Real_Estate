@@ -204,10 +204,10 @@ const handleSignOut = async () =>{
 
   return (
     <div className="ty:fixed df:static">
-
       <div>
         <Header />
       </div>
+      
       <div className="flex min-h-auto items-center justify-center bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent">
         <div className='w-full max-w-md m-10 mb-20 p-8 overflow-y-auto bg-slate-200 rounded-lg border border-blue-100 ring-2 ring-blue-300 ring-offset-2 shadow-xl'>
           <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-4">Dr.Estate Profile</h1>
@@ -289,7 +289,7 @@ const handleSignOut = async () =>{
           </Popover>
 
           <Link to='/sell'><span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">List Property</span></Link>
-          <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Your Property</span>
+          <Link to='/your-property'><span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Your Property</span></Link>
           <span className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Remove Property</span>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import bcryptjs from "bcryptjs";
-import nodemailer from "nodemailer";
 import { errhandler } from "../utils/error.js";
 import user from "../model/user.model.js";
 import agent from "../model/agent.model.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const signup = async (req, res, next) => {
   //makes call asynchronous
@@ -134,8 +134,23 @@ export const signupAgent = async (req, res, next) => {
         }
       },{new:true}
     );
-    var flag = await sendAgentMail(agname,agemail,my_id,next);  //sends mail to agent with id
+
+    const email = process.env.AgentMail;
+    const subject = " Welcome to Our Dr.Estate Team: Important Onboarding Details";
+    const text = `Dear ${agname},\n\n` + 
+    `     Welcome aboard! We are thrilled to have you join our Real Estate team as a valued member.Your expertise and dedication are precisely what we've been searching for,and we are confident that your presence will significantly contribute to our collective success.\n\n`
+    +
+    `     As you embark on this exciting journey with us, we want to ensure that you have all the necessary tools and information to hit the ground running. To that end, please find below your Agent ID, which will serve as your unique identifier within our organization:\n\n
+    Your agent ID: ${my_id}\n\n`
+     + 
+    `     Please ensure to keep this ID secure, as it will be integral for various internal processes and communications moving forward.If you have any questions or need further assistance, feel free to reach out to us.\n\n` + 
+    `Best regards,\n`
+     + 
+    `agents.drestate@gmail.com`;
+    var flag = await sendEmail(email,agemail,subject,text,next);  //sends mail to agent with id
+
     console.log(flag);
+
     if(!flag)
       return res.status(201).json("Agent created successfully...");
     else
@@ -186,35 +201,3 @@ export const signoutAgent = async (req, res, next) => {
   }
 };
 
-const sendAgentMail = async (name,email,id,next)=>{
-  try {
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth:{
-        user:'agents.drestate@gmail.com',
-        pass:process.env.AgentMailPass
-      }
-    });
-    const mailoption = {
-      from:"agents.drestate@gmail.com",
-      to:email,
-      subject:" Welcome to Our Dr.Estate Team: Important Onboarding Details",
-      text: `Dear ${name},\n\n` + 
-    `     Welcome aboard! We are thrilled to have you join our Real Estate team as a valued member.Your expertise and dedication are precisely what we've been searching for,and we are confident that your presence will significantly contribute to our collective success.\n\n`
-    +
-    `     As you embark on this exciting journey with us, we want to ensure that you have all the necessary tools and information to hit the ground running. To that end, please find below your Agent ID, which will serve as your unique identifier within our organization:\n\n
-    Your agent ID: ${id}\n\n`
-     + 
-    `     Please ensure to keep this ID secure, as it will be integral for various internal processes and communications moving forward.If you have any questions or need further assistance, feel free to reach out to us.\n\n` + 
-    `Best regards,\n`
-     + 
-    `agents.drestate@gmail.com`,
-    }
-
-    await transporter.sendMail(mailoption);
-    return 0;
-
-  } catch (error) {
-    return -1;
-  }
-}

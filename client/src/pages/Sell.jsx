@@ -1,4 +1,5 @@
 import React,{ useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import {useSelector} from 'react-redux'
 import { app } from '../firebase'
 import {
@@ -8,6 +9,7 @@ import {
     uploadBytesResumable,
   } from 'firebase/storage';
 import {
+    useToast,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
@@ -34,43 +36,41 @@ export default function Sell() {
     const [imgCount,setImgCount] = useState(0);
     const [showDis,setShowDis] = useState(false);
 
-    const List = {
-        state:"",
-        city:""
-    };
-
-    const List1 = {
-        propertyName: "",
-        propertyType: "",
-        description: "",
-        address: "",
-        bedrooms: 1,
-        bathrooms: 1,
-        sellType:"sell",
-        furnished:false,
-        area: 220,
-        price: 0.00,
-        discountPrice: 0.00,
-        offer: false,
-        saleType: "",
-        images: [],
-        amenities: {
-            parking:false,
-            swimmingPool: false,
-            elevator: false,
-            security: false
-        },
-        noOfVehicle: 0,
-        builtDate: ""
-    };
-
     const [formData, setFormData] = useState({
-        List1,
-        country:"",
+        propertyDetails: {
+            propertyName: "",
+            propertyType: "",
+            description: "",
+            address: "",
+            bedrooms: 1,
+            bathrooms: 1,
+            sellType: "sell",
+            furnished: false,
+            area: 220,
+            price: 0.00,
+            discountPrice: 0.00,
+            offer: false,
+            images: [],
+            amenities: {
+                parking: false,
+                swimmingPool: false,
+                garden:false,
+                elevator: false,
+                security: false
+            },
+            noOfVehicle: 0,
+            builtDate: ""
+        },
+        location: {
+            country: "",
+            state: "",
+            city: ""
+        },
         selectedCategory: '',
         selectedFile: null,
-        List,
     });
+    const toast = useToast();
+    const navigate = useNavigate();
 
     const [amenitiesList,setAmenitiesList] = useState({
         parking:false,
@@ -79,7 +79,10 @@ export default function Sell() {
         security:false,
     });
 
-    
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     const stateOptions = {
         India: ['Gujarat', 'Maharashtra', 'Delhi'],
         USA: ['New York', 'California', 'Texas'],
@@ -87,9 +90,12 @@ export default function Sell() {
     };
     
     const cityOptions = {
-        Gujarat: ['Surat', 'Ahmedabad', 'Vadodara'],
-        Maharashtra: ['Mumbai', 'Pune', 'Nagpur'],
-        Delhi: ['New Delhi', 'Gurgaon', 'Noida'],
+        Gujarat: ['Surat', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar'],
+        Maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad'],
+        Delhi: ['New Delhi', 'Gurgaon', 'Noida', 'Faridabad'],
+        "New York": ['New York City', 'Buffalo', 'Rochester', 'Albany'],
+        California: ['Los Angeles', 'San Francisco', 'San Diego', 'Sacramento'],
+        Texas: ['Houston', 'Dallas', 'Austin', 'San Antonio'],
         // Add more states and their respective cities here
     };
 
@@ -98,24 +104,31 @@ export default function Sell() {
 
         categories.push('Cover image');
 
-        if (formData.List1.amenities.swimmingPool) {
+        categories.push('Kitchen');
+
+        categories.push('Hall');
+
+        if (formData.propertyDetails.amenities.swimmingPool) {
             categories.push('Swimming Pool');
         }
-        if (formData.List1.amenities.parking) {
+        if (formData.propertyDetails.amenities.garden) {
+            categories.push('Garden');
+        }
+        if (formData.propertyDetails.amenities.parking) {
             categories.push('Parking');
         }
-        if (formData.List1.amenities.security) {
+        if (formData.propertyDetails.amenities.security) {
             categories.push('Security');
         }
-        if (formData.List1.amenities.elevator) {
+        if (formData.propertyDetails.amenities.elevator) {
             categories.push('Elevator');
         }
 
         // Add categories based on number of bedrooms and bathrooms
-        for (let i = 1; i <= formData.List1.bedrooms; i++) {
+        for (let i = 1; i <= formData.propertyDetails.bedrooms; i++) {
             categories.push(`Bedroom ${i}`);
         }
-        for (let i = 1; i <= formData.List1.bathrooms; i++) {
+        for (let i = 1; i <= formData.propertyDetails.bathrooms; i++) {
             categories.push(`Bathroom ${i}`);
         }
 
@@ -168,8 +181,8 @@ export default function Sell() {
                 name: formData.selectedFile.name
             };
             
-            const existingIndex = formData.List1.images.findIndex(image => image.category === formData.selectedCategory);
-            const imageExist = formData.List1.images.findIndex(image => image.name === formData.selectedFile.name);
+            const existingIndex = formData.propertyDetails.images.findIndex(image => image.category === formData.selectedCategory);
+            const imageExist = formData.propertyDetails.images.findIndex(image => image.name === formData.selectedFile.name);
     
             if(imageExist !== -1){
                 setImageUploadError("Can't upload same image!!!");
@@ -177,7 +190,7 @@ export default function Sell() {
             }
             else{
                 if (existingIndex !== -1) {
-                    const updatedImages = [...formData.List1.images];
+                    const updatedImages = [...formData.propertyDetails.images];
                     if(formData.selectedFile.name === updatedImages[existingIndex].name){
                         setImageUploadError("Image already uploaded!!!");
                         setUploading(true);
@@ -189,8 +202,8 @@ export default function Sell() {
                             await (storeImage(files));
                             setFormData({
                                 ...formData,
-                                List1: {
-                                    ...formData.List1,
+                                propertyDetails: {
+                                    ...formData.propertyDetails,
                                     images: updatedImages
                                 },        
                             });
@@ -206,11 +219,12 @@ export default function Sell() {
                         await storeImage(files);    
                         setFormData({
                             ...formData,
-                            List1: {
-                                ...formData.List1,
-                                images: [...formData.List1.images, newImage]
+                            propertyDetails: {
+                                ...formData.propertyDetails,
+                                images: [...formData.propertyDetails.images, newImage]
                             },    
                         });
+                        console.log(formData.propertyDetails.images);
                         setImageUploadError("");
                         setUploading(false);
                     }catch(err){
@@ -245,66 +259,66 @@ export default function Sell() {
     };
 
     const handleRemoveUpload = (key) => {
-        const updatedImages = formData.List1.images.filter((image, index) => index !== key);
+        const updatedImages = formData.propertyDetails.images.filter((image, index) => index !== key);
         setFormData({
             ...formData, 
-            List1: { ...formData.List1, images: updatedImages },
+            propertyDetails: { ...formData.propertyDetails, images: updatedImages },
         });
-        console.log(formData.List1.images);
+        console.log(formData.propertyDetails.images);
     }
 
     const handleImageChange = (name,val) => {    
         const category = name + val;
-        if(formData.List1.images.some((image) => image.category === category)){
-            const updatedImages = formData.List1.images.filter(image => image.category !== category);
-            setFormData({...formData,List1: {
-                    ...formData.List1,
+        if(formData.propertyDetails.images.some((image) => image.category === category)){
+            const updatedImages = formData.propertyDetails.images.filter(image => image.category !== category);
+            setFormData({...formData,propertyDetails: {
+                    ...formData.propertyDetails,
                     images: updatedImages,
                 }
             });
-            console.log(formData.List1.images);
+            console.log(formData.propertyDetails.images);
         }
         console.log(category);
     }
     
     
     const handleAreaChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,area:e}});
+        setFormData({...formData, propertyDetails:{...formData.propertyDetails,area:e}});
         console.log(formData);
     }
 
     const handlePriceChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,price:e}});
+        setFormData({...formData, propertyDetails:{...formData.propertyDetails,price:e}});
     }
 
     const handleDiscountPriceChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,discountPrice:e}});
+        setFormData({...formData, propertyDetails:{...formData.propertyDetails,discountPrice:e}});
     }
 
     const handleBedroomsChange = (e) => {
-        if(e<formData.List1.bedrooms){
-            const key = formData.List1.bedrooms;
-            const updatedImages = formData.List1.images.filter((image, index) => index !== key);
-            setFormData({...formData, List1:{...formData.List1,bedrooms:e,images:updatedImages},selectedCategory:'',selectedFile:null});
+        if(e<formData.propertyDetails.bedrooms){
+            const key = formData.propertyDetails.bedrooms;
+            const updatedImages = formData.propertyDetails.images.filter((image, index) => index !== key);
+            setFormData({...formData, propertyDetails:{...formData.propertyDetails,bedrooms:e,images:updatedImages},selectedCategory:'',selectedFile:null});
         }
         else
-            setFormData({...formData, List1:{...formData.List1,bedrooms:e}});
-        console.log(formData.List1);
+            setFormData({...formData, propertyDetails:{...formData.propertyDetails,bedrooms:e}});
+        console.log(formData.propertyDetails);
     }
 
     const handleBathroomsChange = (e) => {
-        if(e<formData.List1.bathrooms){
-            const key = formData.List1.bathrooms;
-            const updatedImages = formData.List1.images.filter((image, index) => index !== key);
-            setFormData({...formData, List1:{...formData.List1,bathrooms:e,images:updatedImages},selectedCategory:'',selectedFile:null});
+        if(e<formData.propertyDetails.bathrooms){
+            const key = formData.propertyDetails.bathrooms;
+            const updatedImages = formData.propertyDetails.images.filter((image, index) => index !== key);
+            setFormData({...formData, propertyDetails:{...formData.propertyDetails,bathrooms:e,images:updatedImages},selectedCategory:'',selectedFile:null});
         }
         else
-        setFormData({...formData, List1:{...formData.List1,bathrooms:e}});
+        setFormData({...formData, propertyDetails:{...formData.propertyDetails,bathrooms:e}});
     console.log(formData);
 }
 
     const handleVehicleChange = (e) => {
-        setFormData({...formData, List1:{...formData.List1,noOfVehicle:e}});
+        setFormData({...formData, propertyDetails:{...formData.propertyDetails,noOfVehicle:e}});
         console.log(formData);
     }
 
@@ -313,33 +327,35 @@ export default function Sell() {
         if (type === 'checkbox') {
             if(name=='offer' && checked)
             {
-                setFormData({...formData,List1:{...formData.List1,discountPrice:0,offer:checked}});
+                setFormData({...formData,propertyDetails:{...formData.propertyDetails,discountPrice:0,offer:checked}});
                 setShowDis(true);
             }
             else if(name=='offer' && !checked)
             {
-                setFormData({...formData,List1:{...formData.List1,discountPrice:0,offer:checked}});
+                setFormData({...formData,propertyDetails:{...formData.propertyDetails,discountPrice:0,offer:checked}});
                 setShowDis(false);
             }
             else
-                setFormData({ ...formData, List1: { ...formData.List1, [name]: checked } });
+                setFormData({ ...formData, propertyDetails: { ...formData.propertyDetails, [name]: checked } });
         } else{       
             if (name === "country") {
-                setFormData({ ...formData, country: value, List: { state: "", city: "" } });
+                setFormData({ ...formData, location: { country:value,state: "", city: "" } });
             } else if (name === "state") {
                 if(value !== '')
-                setFormData({ ...formData, List: { ...formData.List, state: value, } });
+                setFormData({ ...formData, location: { ...formData.location, state: value, } });
                 else
-                setFormData({ ...formData, List: { ...formData.List, state: "State", } });
+                setFormData({ ...formData, location: { ...formData.location, state: "State", } });
             } else if(name === "city"){
                 if(value !== '')
-                    setFormData({ ...formData, List: { ...formData.List, city: value } });
+                    setFormData({ ...formData, location: { ...formData.location, city: value } });
                 else
-                setFormData({ ...formData, List: { ...formData.List, city: "City" } });
+                setFormData({ ...formData, location: { ...formData.location, city: "City" } });
             } else{
                 setFormData({
-                    ...formData,
-                    [name]:value
+                    ...formData,propertyDetails:{
+                        ...formData.propertyDetails,
+                        [name]:value
+                    }
                 })
             }
         }
@@ -355,11 +371,12 @@ export default function Sell() {
         console.log(amenitiesList);
         setFormData(({
             ...formData,
-            List1: {
-                ...formData.List1,
+            propertyDetails: {
+                ...formData.propertyDetails,
                 amenities: {
                     parking: amenitiesList.parking,
                     swimmingPool: amenitiesList.swimmingPool,
+                    garden: amenitiesList.garden,
                     elevator: amenitiesList.elevator,
                     security: amenitiesList.security
                 }
@@ -367,9 +384,9 @@ export default function Sell() {
             selectedCategory:'Cover'
         }));
 
-        const { swimmingPool, parking, elevator, security } = amenitiesList;
+        const { swimmingPool, parking, garden, elevator, security } = amenitiesList;
 
-        if (swimmingPool || parking || elevator || security)
+        if (swimmingPool || parking || elevator || security || garden)
             setShowList(true);
         else
             setShowList(false);
@@ -390,18 +407,20 @@ export default function Sell() {
             name="Swimming Pool";
         else if(key === 'elevator')
             name="Elevator";
+        else if(key === 'garden')
+            name="Garden";
         else if(key === 'Security')
             name="Security";
         else
             name="Parking";
 
-        const updatedImages = formData.List1.images.filter((image, index) => image.category !== name);
-        setFormData({ ...formData, List1: { ...formData.List1, amenities: { ...formData.List1.amenities, [key]: false }, images:updatedImages},selectedCategory:'' });
-        console.log(formData.List1.amenities);
+        const updatedImages = formData.propertyDetails.images.filter((image, index) => image.category !== name);
+        setFormData({ ...formData, propertyDetails: { ...formData.propertyDetails, amenities: { ...formData.propertyDetails.amenities, [key]: false }, images:updatedImages},selectedCategory:'' });
+        console.log(formData.propertyDetails.amenities);
     }
     
     const isClicked = () => {
-        console.log(formData.List1.amenities);
+        console.log(formData.propertyDetails.amenities);
         setShowList(false);
         setShow(true);
     }
@@ -413,25 +432,31 @@ export default function Sell() {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
         var count = 0;
-        if (formData.List1.amenities.swimmingPool) {
+        if (formData.propertyDetails.amenities.swimmingPool) {
             count=count+1;
         }
-        if (formData.List1.amenities.parking) {
+        if (formData.propertyDetails.amenities.parking) {
             count=count+1;
         }
-        if (formData.List1.amenities.security) {
+        if (formData.propertyDetails.amenities.security) {
             count=count+1;
         }
-        if (formData.List1.amenities.elevator) {
+        if (formData.propertyDetails.amenities.garden) {
             count=count+1;
         }
-        count=count+formData.List1.bathrooms+formData.List1.bedrooms;
+        if (formData.propertyDetails.amenities.elevator) {
+            count=count+1;
+        }
+        count=count+formData.propertyDetails.bathrooms+formData.propertyDetails.bedrooms;
         setImgCount(count);
 
-        if(formData.List1.images.length<imgCount){
-            setLoading(true);
+        if(formData.propertyDetails.images.length<imgCount){
             setError("Upload all the images!!!");
+            setImgCount(0);
+            setLoading(false);
         }
         else{
             try {
@@ -443,7 +468,7 @@ export default function Sell() {
                     headers: {
                       "Content-Type": "application/json",  //format of the request body
                   },
-                  body: JSON.stringify({...formData,user:currentUser.username}), // Convert FormData to JSON
+                  body: JSON.stringify({formData,userId:currentUser._id}), // Convert FormData to JSON
                 });
                 console.log("called fetch");
                 
@@ -452,21 +477,26 @@ export default function Sell() {
                 setLoading(false);
                 if (data.success === false) {
                     setError(data.message);
+                    setImgCount(0);
                     setLoading(false);
                 }
                 else{
-                    
+
                     await delay(1000);
               
                     navigate('/');
                     toast({
                       title: 'Listing request',
+                      position: 'top',
                       description: "Your property listing request sent successfully.",
                       status: 'success',
                       duration: 6000,
                       isClosable: true,
                     });
-                    return;
+                    setError(data.message);
+                    setLoading(false);
+                    setImgCount(0);
+                    setFormData({...formData});
                 }
             } catch (error) {
               setLoading(false);
@@ -528,8 +558,8 @@ export default function Sell() {
                     <div className="mb-4 grid grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
-                            <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={formData.List1.discountPrice} precision={2} step={0.01}>
-                                <NumberInputField value={formData.List1.price}/>
+                            <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={formData.propertyDetails.discountPrice} precision={2} step={0.01}>
+                                <NumberInputField value={formData.propertyDetails.price}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
                                     <NumberDecrementStepper/>
@@ -538,8 +568,8 @@ export default function Sell() {
                         </div>
                         {showDis && <div>
                             <label htmlFor="discountPrice" className="block text-sm font-medium text-gray-700">Discount Price</label>
-                            <NumberInput onChange={handleDiscountPriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} max={formData.List1.price} precision={2} step={0.01}>
-                                <NumberInputField value={formData.List1.discountPrice}/>
+                            <NumberInput onChange={handleDiscountPriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" min={0} max={formData.propertyDetails.price} precision={2} step={0.01}>
+                                <NumberInputField value={formData.propertyDetails.discountPrice}/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
                                     <NumberDecrementStepper/>
@@ -572,7 +602,7 @@ export default function Sell() {
                                 <label htmlFor="state" className="block text-sm font-medium text-gray-700">State</label>
                                 <select id="state" name="state" required defaultChecked="default" onChange={handleChange} className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option key="default" value="">--Select State--</option>
-                                {stateOptions[formData.country]?.map(state => (
+                                {stateOptions[formData.location.country]?.map(state => (
                                     <option key={state} value={state}>{state}</option>
                                 ))}
                                 </select>
@@ -582,7 +612,7 @@ export default function Sell() {
                                 <label htmlFor="city" className="block text-sm font-medium text-gray-700">City</label>
                                 <select id="city" name="city" required defaultChecked='default' onChange={handleChange} className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option key='deafult' value="">--Select City--</option>
-                                {cityOptions[formData.List.state]?.map(city => (
+                                {cityOptions[formData.location.state]?.map(city => (
                                     <option key={city} value={city}>{city}</option>
                                 ))}
                                 </select>
@@ -607,7 +637,7 @@ export default function Sell() {
                                 <NumberInputField />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
-                                    <NumberDecrementStepper onClick={() => handleImageChange("Bedroom ",(parseInt(formData.List1.bedrooms) + 1))}/>
+                                    <NumberDecrementStepper onClick={() => handleImageChange("Bedroom ",(parseInt(formData.propertyDetails.bedrooms) + 1))}/>
                                 </NumberInputStepper>
                             </NumberInput>
                         </div>
@@ -618,7 +648,7 @@ export default function Sell() {
                                 <NumberInputField />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper/>
-                                    <NumberDecrementStepper onClick={() => handleImageChange("Bathroom ",(parseInt(formData.List1.bathrooms) + 1))}/>
+                                    <NumberDecrementStepper onClick={() => handleImageChange("Bathroom ",(parseInt(formData.propertyDetails.bathrooms) + 1))}/>
                                 </NumberInputStepper>
                             </NumberInput>
                         </div>
@@ -654,6 +684,10 @@ export default function Sell() {
                                     <label htmlFor="elevator" className="m-2 text-gray-700">Elevator</label>
                                 </div>
                                 <div>
+                                    <input type="checkbox" required id="garden" name="garden"  onChange={handleChangeAmenities} className="mt-2 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                                    <label htmlFor="garden" className="m-2 text-gray-700">Garden</label>
+                                </div>
+                                <div>
                                     <input type="checkbox" required id="security" name="security"  onChange={handleChangeAmenities} className="mt-2 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
                                     <label htmlFor="security"  className="m-2 text-gray-700">Security</label>
                                 </div>
@@ -681,7 +715,7 @@ export default function Sell() {
                     {showList ? <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700">Selected Amenities</label>
                             <ul className="grid grid-cols-2 gap-3 m-2">
-                                {Object.entries(formData.List1.amenities).map(([key, value]) => (
+                                {Object.entries(formData.propertyDetails.amenities).map(([key, value]) => (
                                     value && (
                                         <li key={key} className="grid grid-flow-col items-center">
                                             <div className='flex flex-row'>
@@ -706,11 +740,11 @@ export default function Sell() {
                     <div className="mb-4 grid grid-cols-2">
                         <div className='my-1'>
                             <label htmlFor="offer" className="block text-sm font-medium text-gray-700">Offer</label>
-                            <input type="checkbox" required id="offer" name="offer" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                            <input type="checkbox" id="offer" name="offer" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
                         </div>
                         <div className='my-1'>
                             <label htmlFor="furnished" className="block text-sm font-medium text-gray-700">furnished</label>
-                            <input type="checkbox" required id="furnished" name="furnished" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
+                            <input type="checkbox" id="furnished" name="furnished" onChange={handleChange} className="mt-1 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded bg-gray-50" />
                         </div>
                     </div>
 
@@ -741,7 +775,7 @@ export default function Sell() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Uploaded images</label>
                             <div className='grid grid-cols-3 items-center'>
-                                {formData.List1.images.map((image, index) => (
+                                {formData.propertyDetails.images.map((image, index) => (
                                     <div key={index} className='grid grid-flow-row items-center m-1 border-black/35 border-spacing-1 border-2 rounded-md'>
                                         <div className='flex flex-col items-center justify-evenly p-1'>  
                                             <div>{image.category}</div>

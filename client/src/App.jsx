@@ -15,6 +15,7 @@ import AgentDashboard from './pages/AgentDashboard';
 import PrivateRoute2 from './components/PrivateRoute2';
 import PrivateRoute3 from './components/PrivateRoute3';
 import AgentProfile from './pages/AgentProfile';
+import UserProperty from './pages/UserProperty';
 
 export default function App() {
 
@@ -44,6 +45,11 @@ export default function App() {
       <Route element={<PrivateRoute from="profile"/>}>
         <Route path='/profile' element={<Profile/>} />
       </Route>
+
+      <Route element={<PrivateRoute from="user-property"/>}>
+        <Route path='/your-property' element={<UserProperty/>}/>
+      </Route>
+
       <Route element={<PrivateRoute from="sell"/>}>
         <Route path='/sell' element={<Sell />}/>
       </Route>

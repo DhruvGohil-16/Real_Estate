@@ -41,9 +41,12 @@ export default function AgentProfile() {
     };
 
     const cityOptions = {
-        Gujarat: ['Surat', 'Ahmedabad', 'Vadodara'],
-        Maharashtra: ['Mumbai', 'Pune', 'Nagpur'],
-        Delhi: ['New Delhi', 'Gurgaon', 'Noida'],
+        Gujarat: ['Surat', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar'],
+        Maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad'],
+        Delhi: ['New Delhi', 'Gurgaon', 'Noida', 'Faridabad'],
+        "New York": ['New York City', 'Buffalo', 'Rochester', 'Albany'],
+        California: ['Los Angeles', 'San Francisco', 'San Diego', 'Sacramento'],
+        Texas: ['Houston', 'Dallas', 'Austin', 'San Antonio'],
         // Add more states and their respective cities here
     };
     const dispatch = useDispatch();

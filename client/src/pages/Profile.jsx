@@ -26,6 +26,10 @@ export default function Profile() {
   const toast = useToast();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
+  useEffect(() => {
     dispatch(defaultRed());
     if (file) {
       handleFileUpload(file);

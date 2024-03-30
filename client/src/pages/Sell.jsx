@@ -1,4 +1,4 @@
-import React,{ useState } from 'react'
+import React,{ useState,useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import {useSelector} from 'react-redux'
 import { app } from '../firebase'
@@ -78,6 +78,10 @@ export default function Sell() {
         elevator:false,
         security:false,
     });
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, []);
 
     function delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));

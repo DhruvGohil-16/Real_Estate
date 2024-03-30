@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react'
-import {useDispatch, useSelector} from 'react-redux'
-import {useToast,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverBody,PopoverFooter,PopoverArrow,PopoverCloseButton} from '@chakra-ui/react'
+import React, { useRef, useState, useEffect } from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import {useToast,Popover,PopoverTrigger,PopoverContent,PopoverHeader,PopoverBody,PopoverFooter,PopoverArrow,PopoverCloseButton} from '@chakra-ui/react';
 import {
   getDownloadURL,
   getStorage,
@@ -33,7 +34,7 @@ export default function AgentProfile() {
         state:"",
         city:"",
     });
-
+    const navigate = useNavigate();
     const stateOptions = {
         India: ['Gujarat', 'Maharashtra', 'Delhi'],
         USA: ['New York', 'California', 'Texas'],
@@ -53,6 +54,7 @@ export default function AgentProfile() {
     const toast = useToast();
 
     useEffect(()=>{
+        window.scrollTo(0, 0);
         setAgentFormData({ ...agentFormData, country: currentUser.location.country, state: currentUser.location.state, city:  currentUser.location.city});
     },[]);
     useEffect(() => {
@@ -367,8 +369,8 @@ export default function AgentProfile() {
                   </div>
                 </PopoverFooter>
               </PopoverContent>
-            
           </Popover>
+          <button type='button' onClick={()=>{navigate('/agent-dashboard')}} className="flex justify-evenly w-full p-2 rounded border border-black hover:bg-slate-300 mb-4 cursor-pointer">Properties verified</button>
         </div>
       </div>
       <MyFooter/>

@@ -1,9 +1,13 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import Header from '../components/Header'
 import MyFooter from '../components/MyFooter';
 import ContactUs from './ContactUs';
 
 export default function Home() {
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const properties = [
     {
       id: 1,

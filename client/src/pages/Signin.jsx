@@ -23,7 +23,10 @@ export default function Signin() {
   const dispatch = useDispatch();
   const {error,loading} =  useSelector((state)=>state.user)
 
-  useEffect(()=>{dispatch(defaultRed())},[]);
+  useEffect(()=>{
+    dispatch(defaultRed());
+    window.scrollTo(0,0);
+  },[]);
 
   const toast = useToast();
 

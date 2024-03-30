@@ -25,10 +25,10 @@ export default function AgentHeader() {
             </h1>
           </Link>
           <div className="flex items-center space-x-4 ">
-            <Link to="/agent-dashboard" className="hover:text-blue-800">
+            <Link to="/new-leads" className="hover:text-blue-800">
               New Leads
             </Link>
-            <Link to="/agent-dashboard" className="hover:text-blue-800">
+            <Link to="/recent-leads" className="hover:text-blue-800">
               Recent Leads
             </Link>
             <Link to="/agent-profile" className="flex items-center space-x-2">

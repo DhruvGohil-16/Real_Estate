@@ -4,6 +4,7 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import { useSelector } from 'react-redux';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import Signin from './pages/Signin';
@@ -16,14 +17,17 @@ import PrivateRoute2 from './components/PrivateRoute2';
 import PrivateRoute3 from './components/PrivateRoute3';
 import AgentProfile from './pages/AgentProfile';
 import UserProperty from './pages/UserProperty';
+import NewLeads from './pages/NewLeads';
+import RecentLeads from './pages/RecentLeads';
 
 export default function App() {
 
+  const { role} = useSelector((state) => state.user);
   return (
   <Router>
     <Routes>
-
-      <Route element={<PrivateRoute3 from="home"/>}>
+      
+      <Route element={role === 'agent' ? <AgentDashboard /> : <PrivateRoute3 from="home"/>}>
         <Route path='/' element={<Home/>} />
       </Route>
 
@@ -40,6 +44,12 @@ export default function App() {
       </Route>
       <Route element={<PrivateRoute2 from="Agent-profile"/>}>
         <Route path='/agent-profile' element={<AgentProfile/>}/>
+      </Route>
+      <Route element={<PrivateRoute2 from="agent-leads"/>}>
+        <Route path='/new-leads' element={<NewLeads/>}/>
+      </Route>
+      <Route element={<PrivateRoute2 from="agent-leads"/>}>
+        <Route path='/recent-leads' element={<RecentLeads/>}/>
       </Route>
 
       <Route element={<PrivateRoute from="profile"/>}>
@@ -59,8 +69,6 @@ export default function App() {
       <Route element={<PrivateRoute from="rent"/>}>
         <Route path='/rent' element={<Sell />}/>
       </Route>
-
-      <Route path='/about' element={<About/>} />
     </Routes>
   </Router>
   )

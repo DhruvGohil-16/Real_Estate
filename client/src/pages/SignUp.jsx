@@ -33,6 +33,10 @@ export default function SignUp() {
     state:"",
     city:"",
   });
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const stateOptions = {
     India: ['Gujarat', 'Maharashtra', 'Delhi'],

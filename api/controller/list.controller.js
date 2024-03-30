@@ -97,3 +97,14 @@ export const verifiedlisting = async (req, res, next) => {
         next(errhandler(500,error));
     }
 };
+
+export const rejectedlisting = async (req, res, next) => {
+    if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        const rejectedListings = await list.find({ reqAccepted: -1, user: req.params.id });
+        console.log(verifiedListings);
+        res.status(200).json({ success: true, data: rejectedListings });
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};

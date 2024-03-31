@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React from 'react';
 import {useSelector} from 'react-redux'
 import { Link } from 'react-router-dom';
 import MyFooter from '../components/MyFooter';
@@ -7,10 +7,7 @@ import AgentHeader from '../components/AgentHeader';
 export default function AgentDashboard() {
   
   const { currentUser} = useSelector((state) => state.user);
-  useEffect(()=>{
-    window.scrollTo(0, 0);
-  },[]);
-
+  
   return (
     <div className="min-h-screen bg-gray-200 bg-gradient-to-b from-gray-300 to-transparent">
       <AgentHeader/>

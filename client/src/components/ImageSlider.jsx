@@ -86,12 +86,12 @@ const handleRight = () => {
 
   return (
     
-        <div className='mx-4 mt-4 mb-10 '>
-            <div className='grid grid-cols-4 gap-1 items-center'>
-                <div className='grid col-span-3'>
-                    <div className='grid grid-flow-row items-center'>
-                        <img {...Swipeable} src={images[currentIndex].url} alt={images[currentIndex].name} className='h-96 rounded-tl-xl border-solid border-2 border-black'/>
-                        <div className='grid grid-flow-col items-center rounded-bl-xl border-solid border-l-2 border-b-2 border-r-2 border-black'>
+        <div className='mx-4 mt-1 mb-10 static'>
+            <div className='grid grid-cols-6 gap-1 items-center h-96 w-full mx-4 shadow-lg shadow-black/70 rounded-xl'>
+                <div className='grid col-span-5 h-full'>
+                    <div className='grid grid-flow-row items-center h-96'>
+                        <img {...Swipeable} src={images[currentIndex].url} alt={images[currentIndex].name} className='h-80 w-full rounded-tl-xl border-solid border-2 border-black'/>
+                        <div className='grid grid-flow-col items-center h-16 rounded-bl-xl border-solid border-l-2 border-b-2 border-r-2 border-black'>
                             <div className='grid justify-end m-2'>
                                 <button className="w-fit bg-gray-800 text-white px-3 py-1 rounded" onClick={handleLeft}>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,19 +112,19 @@ const handleRight = () => {
                         </div>
                     </div>
                 </div>
-                <div className='h-full'>
-                    <div className='grid grid-rows-3 gap-px h-full'>
-                        <div>
-                            <img src={images[prevIndex].url} onClick={handleLeft} alt={images[prevIndex].name} className='h-full rounded-tr-xl border-solid border-2 border-black/40 cursor-pointer'/>
-                            <p className="text-center -mt-6 font-semibold font-serif">{images[prevIndex].category}</p>
+                <div className='h-96'>
+                    <div className='grid grid-rows-3 gap-px h-96'>
+                        <div className='relative'>
+                            <img src={images[prevIndex].url} onClick={handleLeft} alt={images[prevIndex].name} className='h-full w-full opacity-75 hover:opacity-85 rounded-tr-xl border-solid border-2 border-black/40 cursor-pointer'/>
+                            <p className="absolute text-center -mt-8 h-fit rounded-md bg-white/80 ml-2 p-1 font-semibold text-xs font-serif">{images[prevIndex].category}</p>
                         </div>
-                        <div>
-                            <img src={images[currentIndex].url} alt={images[currentIndex].name} className='h-full  border-solid border-2 border-black'/>
-                            <p className="text-center -mt-6 font-semibold font-serif">{images[currentIndex].category}</p>
+                        <div className='relative'>
+                            <img src={images[currentIndex].url} alt={images[currentIndex].name} className='h-full w-full border-solid border-4 border-black'/>
+                            <p className="absolute text-center -mt-8 h-fit rounded-md bg-white/80 ml-2 p-1 font-semibold text-xs font-serif">{images[currentIndex].category}</p>
                         </div>
-                        <div>
-                            <img src={images[nextIndex].url} onClick={handleRight} alt={images[nextIndex].name} className='h-full rounded-br-xl border-solid border-2 border-black/40 cursor-pointer'/>
-                            <p className="text-center -mt-6 font-semibold font-serif">{images[nextIndex].category}</p>
+                        <div className='relative'>
+                            <img src={images[nextIndex].url} onClick={handleRight} alt={images[nextIndex].name} className='h-full w-full opacity-75 hover:opacity-85 rounded-br-xl border-solid border-2 border-black/40 cursor-pointer'/>
+                            <p className="absolute text-center -mt-8 h-fit rounded-md bg-white/80 ml-2 p-1 font-semibold text-xs font-serif">{images[nextIndex].category}</p>
                         </div>
                     </div>
                 </div>

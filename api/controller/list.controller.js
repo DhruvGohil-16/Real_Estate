@@ -14,7 +14,10 @@ export const listing = async (req,res,next) => {
         }
         const propUser = await user.findById(req.body.userId);
         const builtDate = req.body.formData.propertyDetails.builtDate;
-        const formattedBuiltDate = builtDate.toISOString().substring(0, 10);
+        const formattedBuiltDate = new Date(builtDate).toISOString().substring(0, 10);
+
+        agentDetails.new = agentDetails.new + 1;
+        await agentDetails.save();
 
         const newProperty = new list({
             propertyName: req.body.formData.propertyDetails.propertyName,
@@ -80,8 +83,10 @@ export const pendinglisting = async (req, res, next) => {
     try {
         const pendingListings = await list.find({ reqAccepted: 0, user: req.params.id });
 
-        console.log(pendingListings);
-        res.status(200).json({ success: true, data: pendingListings });
+        if(pendingListings) 
+            res.status(200).json({ success: true, data: pendingListings });
+        else
+            next(errhandler(404,"No pending listing"));
     } catch (error) {
         next(errhandler(500,error));
     }
@@ -91,8 +96,11 @@ export const verifiedlisting = async (req, res, next) => {
     if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
     try {
         const verifiedListings = await list.find({ reqAccepted: 1, user: req.params.id });
-        console.log(verifiedListings);
-        res.status(200).json({ success: true, data: verifiedListings });
+
+        if(verifiedListings) 
+            res.status(200).json({ success: true, data: verifiedListings });
+        else
+            next(errhandler(404,"No verified listing"));
     } catch (error) {
         next(errhandler(500,error));
     }
@@ -102,8 +110,11 @@ export const rejectedlisting = async (req, res, next) => {
     if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
     try {
         const rejectedListings = await list.find({ reqAccepted: -1, user: req.params.id });
-        console.log(verifiedListings);
-        res.status(200).json({ success: true, data: rejectedListings });
+        
+        if(rejectedListings) 
+            res.status(200).json({ success: true, data: rejectedListings });
+        else
+            next(errhandler(404,"No rejected listing"));
     } catch (error) {
         next(errhandler(500,error));
     }

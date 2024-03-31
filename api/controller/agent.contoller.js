@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs'
 import { errhandler } from "../utils/error.js";
 import agent from '../model/agent.model.js';
+import list from '../model/list.model.js';
 
 export const test = (req,res) => {
     res.json({
@@ -63,4 +64,45 @@ export const deleteagent = async (req,res,next) => {
     } catch (error) {
         next(error);
     }
-} 
+}
+
+export const verifynewlisting = async (req, res, next) => {
+    if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        console.log("verifynewlisting");
+        const verifynewListings = await list.find({ reqAccepted: 0, agent: req.params.id, reqViewd:false });
+        
+        if(verifynewListings) 
+            res.status(200).json({ success: true, data: verifynewListings });
+        else
+            next(errhandler(404,"No new listing"));
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+
+export const verifyrecentlisting = async (req, res, next) => {
+    if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        console.log("verifyrecentlisting");
+        const verifyrecentListings = await list.find({ reqAccepted: 0, agent: req.params.id, reqViewd:true });
+        
+        if(verifyrecentListings) 
+            res.status(200).json({ success: true, data: verifyrecentListings });
+        else
+            next(errhandler(404,"No recent listing"));
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+
+export const newCount = async (req, res, next) => {
+    if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        
+        const newCounts = await agent.findById(req.params.id);
+        res.status(200).json({ success: true, data: newCounts.new });
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};

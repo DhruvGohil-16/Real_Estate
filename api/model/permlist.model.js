@@ -18,6 +18,10 @@ const userlisting = new mongoose.Schema({
         type:String,
         required:true
     },
+    agentEmail:{
+        type:String,
+        required:true
+    },
     propertyType: {
         type: String, 
         required: true
@@ -25,10 +29,6 @@ const userlisting = new mongoose.Schema({
     description: { 
         type: String, 
         required: true 
-    },
-    saleType: {
-        type:String,
-        required:true
     },
     price: { 
         type: Number, 
@@ -95,6 +95,6 @@ const userlisting = new mongoose.Schema({
     },
   }, { timestamps: true });
 
-const permlist = mongoose.model('userlist',userlisting);
+const permlist = mongoose.model('permlist',userlisting);
 
 export default permlist;

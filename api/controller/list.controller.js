@@ -53,9 +53,9 @@ export const listing = async (req,res,next) => {
           },{new:true}
         );
 
-        const email = process.env.TeamMail;
-        const subject = `Welcome to DrEstate!!! 🏡 Let's Get Your Property Listed!`;
-        const text = `Dear ${propUser.username},\n\n` +
+        var email = process.env.TeamMail;
+        var subject = `Welcome to DrEstate!!! 🏡 Let's Get Your Property Listed!`;
+        var text = `Dear ${propUser.username},\n\n` +
         `     We are delighted to welcome you to DrEstate, your premier destination for all things real estate!\n\n` +
         `     At DrEstate, we pride ourselves on offering top-notch services tailored to meet your property needs. Whether you're looking to list your property or find your dream home, our dedicated team is here to assist you every step of the way.\n\n` +
         `     Your recent property listing request has been successfully received. Our team of experts will carefully review your submission to ensure that it meets our quality standards. Please note that this verification process may take up to 7-8 working days.\n\n` +
@@ -64,11 +64,28 @@ export const listing = async (req,res,next) => {
         `     Thank you once again for choosing DrEstate. We look forward to serving you and helping you achieve your property goals!\n\n` +
         `Best regards,\n` +
         `DrEstate Team`;
-        var flag = await sendEmail(email,propUser.email,subject,text,next);  //sends mail to agent with id
+        var flag = await sendEmail(email,propUser.email,subject,text,next);
+
+        email = process.env.AgentMail;
+        subject = `Notification: New Lead Requires Verification!!!`;
+        text = `Dear ${agentDetails.name},\n\n` +
+        `     We hope this message finds you well.\n\n` +
+        `     We're writing to inform you that a new lead has been assigned to you for verification. Please find the details below:\n\n` +
+        `     Your recent property listing request has been successfully received. Our team of experts will carefully review your submission to ensure that it meets our quality standards. Please note that this verification process may take up to 7-8 working days.\n\n` +
+        `   Lead Name: ${listProp.name}\n`+
+        `   Owner Contact Information: ${propUser.email}\n\n`+
+        `     Your prompt attention to this matter is greatly appreciated. Kindly review the lead and take the necessary actions within the next 7-8 working days.\n\n` +
+        `     Kindly note that this is an automated email, and we kindly request you not to reply to it. However, Should you have any questions or require further assistance, please don't hesitate to reach out to us.\n\n` +
+        `     Thank you once again for choosing DrEstate. We look forward to serving you and helping you achieve your property goals!\n\n` +
+        `     Thank you for your cooperation.\n\n` +
+        `Best regards,\n` +
+        `DrEstate Team`;
+        var flag1 = await sendEmail(email,agentDetails.email,subject,text,next);
+
 
         console.log(flag);
 
-        if(!flag)
+        if(!flag && !flag1)
         return res.status(201).json("Listing request created successfully...");
         else
         next(errhandler(404,"Error while sending mail"));

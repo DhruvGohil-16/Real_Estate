@@ -72,7 +72,7 @@ export const listing = async (req,res,next) => {
         `     We hope this message finds you well.\n\n` +
         `     We're writing to inform you that a new lead has been assigned to you for verification. Please find the details below:\n\n` +
         `     Your recent property listing request has been successfully received. Our team of experts will carefully review your submission to ensure that it meets our quality standards. Please note that this verification process may take up to 7-8 working days.\n\n` +
-        `   Lead Name: ${listProp.name}\n`+
+        `   Lead Name: ${listProp.propertyName}\n`+
         `   Owner Contact Information: ${propUser.email}\n\n`+
         `     Your prompt attention to this matter is greatly appreciated. Kindly review the lead and take the necessary actions within the next 7-8 working days.\n\n` +
         `     Kindly note that this is an automated email, and we kindly request you not to reply to it. However, Should you have any questions or require further assistance, please don't hesitate to reach out to us.\n\n` +

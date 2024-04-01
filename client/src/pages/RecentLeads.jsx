@@ -164,8 +164,8 @@ export default function RecentLeads() {
                 {recentLeads.length ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {recentLeads.map((property,index) => (
-                            <div key={property._id} className="bg-slate-200 shadow-lg rounded-md m-6">
-                                <img src={property.images[0].url} alt={property.propertyName} className="w-full h-60 rounded-t-md mb-4" />
+                            <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
+                                <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                 <div className='m-6'>
                                     {property.offer && (
                                         <div className='flex flex-row gap-2'>

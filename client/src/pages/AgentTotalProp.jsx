@@ -2,8 +2,10 @@ import React,{useEffect,useState} from 'react'
 import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
 import { FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
+import { FcApproval,FcCancel } from "react-icons/fc";
 import { FaLocationDot,FaHouseLock } from "react-icons/fa6";
 import { TbRulerMeasure, TbReceiptTax } from "react-icons/tb";
+import { MdOutlinePendingActions } from "react-icons/md";
 import { PiPark } from "react-icons/pi";
 import { MdAddHomeWork } from "react-icons/md";
 import { GiElevator, GiHomeGarage, GiWoodBeam } from "react-icons/gi";
@@ -18,146 +20,38 @@ import {Modal,
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverCloseButton,
-    Box,Button,useDisclosure, useToast}from '@chakra-ui/react'
+    Box,Button,useDisclosure}from '@chakra-ui/react'
 import AgentHeader from '../components/AgentHeader'
 import MyFooter from '../components/MyFooter'
 import ImageSlider from '../components/ImageSlider';
-import { useNavigate } from 'react-router-dom';
 
-export default function NewLeads() {
+export default function AgentTotalProp() {
 
-    const [newLeads,setNewLeads] = useState([]);
-    const [rejMessage, setRejMessage] = useState("");
+    const [totalProperties,setTotalProperties] = useState([]);
     const [error, setError] = useState("");
-    const [loading,setLoading] = useState(false);
-    const [listloading,setListLoading] = useState(false);
-    const [rejloading,setRejLoading] = useState(false);
     const [propIndex, setPropIndex] = useState(0);
     const { currentUser} = useSelector((state) => state.user);
-    const toast = useToast();
-    const navigate = useNavigate();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
+    
     const handleIndexClick = async(index) => {
         setError('');
-        try {
-            const res = await fetch(`./api/agent/updateNewCount/${currentUser._id}`, { 
-                method: "PATCH", // Adjust the HTTP method based on your API endpoint requirements
-                headers: {
-                "Content-Type": "application/json",  //format of the request body
-            },
-            body: JSON.stringify({propId:newLeads[index].propertyId}), // Convert FormData to JSON
-            });
-            console.log("called fetch");
-            const Data = await res.json();
-            
-            console.log(Data);
-        } catch (error) {
-            console.log(error);
-        }
         setPropIndex(index);
         onOpen();
     }
 
-    const handleChange = (e) => {
-        setRejMessage(e.target.value);
-    }
-    const handleVerify = async(propId,status) => {
-        setError('');
-        
-        var flag;
-        
-        if(status==1){
-            setListLoading(true);
-            setLoading(true);
-            flag = fetchVerify(propId,status);
-        }
-        else{
-            setRejLoading(true);
-            setLoading(true);
-            if(rejMessage){
-                flag = fetchVerify(propId,status);
-            }
-            else
-                setRejMessage("*required");
-        };
-        const result = await flag;
-
-        if (result === 0) {
-            const mess = status === 1 ? 'listed' : 'rejected';
-            
-            setLoading(false);
-            setListLoading(false);
-            setRejLoading(false);
-            setRejMessage('');
-
-            await delay(2000);
-            
-            navigate('/agent-dashboard');
-            toast({
-                title: 'Property Listing Request',
-                description: `Property has been ${mess}`,
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-        else{
-            setLoading(false);
-            setListLoading(false);
-            setRejLoading(false);
-            setRejMessage('');
-        }
-    };
-
-    const fetchVerify = async(propId,status) => {
-        try {   
-            console.log("calling fetch");
-            const res = await fetch(`./api/agent/verify/${currentUser._id}`, { 
-                method: "PATCH", // Adjust the HTTP method based on your API endpoint requirements
-                headers: {
-                "Content-Type": "application/json",  //format of the request body
-            },
-            body: JSON.stringify({status,propId,rejMessage}), // Convert FormData to JSON
-            });
-            console.log("called fetch");
-            
-            const data = await res.json(); //get json response in data
-
-            setError(data.message);
-            setRejMessage("");
-            if (data.success===false)
-                return 1;
-
-        } catch (error) {
-            setError(error.message);
-            return 1;
-        }
-        return 0;
-    }
-
-    const fetchNewLeads = async () => {
+    const fetchTotalProperties = async () => {
         setError('');
         try {
-            const response = await fetch(`/api/agent/verifyNewReq/${currentUser._id}`);
+            const response = await fetch(`/api/agent/totalReq/${currentUser._id}`);
             const Data = await response.json();
             
             if (Data.success === false)
                 setError(Data.message);
             else{
                 setError('');
-                setNewLeads(Data.data);
+                setTotalProperties(Data.data);
                 console.log(Data);
             }
         } catch (error) {
@@ -167,21 +61,18 @@ export default function NewLeads() {
 
     useEffect(() => {
         window.scrollTo(0,0);
-        fetchNewLeads();
+        fetchTotalProperties();
     }, []);
-    useEffect(() => {
-        console.log("updated count");
-    }, [propIndex]);
 
   return (
     <div>
-        <AgentHeader key={propIndex} />
+        <AgentHeader/>
         <div className='flex min-h-screen bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent'>
             <div className="container mx-auto py-8 ">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">New Properties</h2>
-                {newLeads.length ? (
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">All Properties</h2>
+                {totalProperties.length ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {newLeads.map((property,index) => (
+                        {totalProperties.map((property,index) => (
                             <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
                                 <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                 <div className='m-6'>
@@ -201,8 +92,11 @@ export default function NewLeads() {
                                     </div>
                                     <div className='grid grid-flow-col gap-2'>
                                         <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                        <div className='flex justify-end'>
+                                        <div className='flex justify-end flex-col'>
                                             <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                            <div>{property.reqAccepted===0 && (<div className='flex font-serif mt-px items-center'>Status : <MdOutlinePendingActions className=' mt-1 ml-1' size={25}/></div>)}</div>
+                                            <div>{property.reqAccepted===1 && (<div className='flex font-serif mt-px items-center'>Status : <FcApproval className=' mt-1 ml-1' size={25}/></div>)}</div>
+                                            <div>{property.reqAccepted===-1 && (<div className='flex font-serif mt-px items-center'>Status : <FcCancel className=' mt-1 ml-1' size={25}/></div>)}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,61 +104,61 @@ export default function NewLeads() {
                         ))}
                     </div>
                 ) : (
-                    <p>No new leads...</p>
+                    <p>No property request yet...</p>
                 )}
-                { newLeads[propIndex] && <Modal isOpen={isOpen} size='full' onClose={onClose}>
+                { totalProperties[propIndex] && <Modal isOpen={isOpen} size='full' onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent>
-                        <ModalHeader fontFamily='serif' fontSize={32} textTransform='uppercase' textAlign='left' >{newLeads[propIndex].propertyName}</ModalHeader>
-                        <ModalCloseButton _disabled={loading} />
+                        <ModalHeader fontFamily='serif' fontSize={32} textTransform='uppercase' textAlign='left' >{totalProperties[propIndex].propertyName}</ModalHeader>
+                        <ModalCloseButton />
                         <ModalBody>
                             <div>
-                                <ImageSlider images={newLeads[propIndex].images} />
+                                <ImageSlider images={totalProperties[propIndex].images} />
                                 <div className='grid grid-flow-row gap-2 m-4'>
-                                    {newLeads[propIndex].offer && (
+                                    {totalProperties[propIndex].offer && (
                                         <div className='flex flex-row gap-2'>
-                                            <div className="text-black text-2xl line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(newLeads[propIndex].price)}</div>
-                                            <div className='text-black text-3xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(newLeads[propIndex].discountPrice)}</div>
+                                            <div className="text-black text-2xl line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].price)}</div>
+                                            <div className='text-black text-3xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].discountPrice)}</div>
                                         </div>
                                     )}
-                                    {!newLeads[propIndex].offer && (
-                                        <div className="text-black text-3xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(newLeads[propIndex].price)}</div>
+                                    {!totalProperties[propIndex].offer && (
+                                        <div className="text-black text-3xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].price)}</div>
                                     )}
                                     <div className="flex flex-row gap-7 justify-start my-4">
-                                        <div className="text-black "><span className='font-bold'>{Intl.NumberFormat('en-IN').format(newLeads[propIndex].bedrooms)}</span> bed</div>
-                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(newLeads[propIndex].bathrooms)}</span> bath</div>
-                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(newLeads[propIndex].sqarea)}</span> sqft</div>
+                                        <div className="text-black "><span className='font-bold'>{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].bedrooms)}</span> bed</div>
+                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].bathrooms)}</span> bath</div>
+                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(totalProperties[propIndex].sqarea)}</span> sqft</div>
                                     </div>
                                     <div className='flex flex-row gap-3 items-center mb-4 pb-2 border-solid border-black border-b-2'>
                                         <FaLocationDot size={25} />
-                                        <p className="text-black/80 text-balance font-serif text-lg ">{newLeads[propIndex].address}</p>                                                              
+                                        <p className="text-black/80 text-balance font-serif text-lg ">{totalProperties[propIndex].address}</p>                                                              
                                     </div>
                                     <div className='w-3/5 mb-5'>
                                         <div className='grid grid-cols-3 gap-y-10'>
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <FaHome size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>{newLeads[propIndex].propertyType}</span>
+                                                    <span className='font-serif font-semibold'>{totalProperties[propIndex].propertyType}</span>
                                                     <span className='text-sm font-serif text-black/60'>Property type</span>
                                                 </div>
                                             </div>
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <TbRulerMeasure size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>₹ {Intl.NumberFormat('en-IN').format((newLeads[propIndex].price)/(newLeads[propIndex].sqarea))}</span>
+                                                    <span className='font-serif font-semibold'>₹ {Intl.NumberFormat('en-IN').format((totalProperties[propIndex].price)/(totalProperties[propIndex].sqarea))}</span>
                                                     <span className='text-sm font-serif text-black/60'>Price per sqft</span>
                                                 </div>
                                             </div>
-                                            {newLeads[propIndex].amenities[0].parking && (
+                                            {totalProperties[propIndex].amenities[0].parking && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiHomeGarage size={25} />
                                                         <div className='flex flex-col'>
-                                                            <span className='text-lg font-serif font-semibold'>{newLeads[propIndex].noOfVehicle} <span className='text-sm'>Vehicle</span></span>
+                                                            <span className='text-lg font-serif font-semibold'>{totalProperties[propIndex].noOfVehicle} <span className='text-sm'>Vehicle</span></span>
                                                             <span className='text-sm font-serif text-black/60'>Parking</span>
                                                         </div>
                                                     </div>
                                             )}
-                                            {newLeads[propIndex].furnished && (
+                                            {totalProperties[propIndex].furnished && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiWoodBeam size={25} />
                                                         <span className='font-serif font-semibold'>Furnished</span>
@@ -273,7 +167,7 @@ export default function NewLeads() {
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <FaHammer size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>{newLeads[propIndex].builtDate}</span>
+                                                    <span className='font-serif font-semibold'>{totalProperties[propIndex].builtDate}</span>
                                                     <span className='text-sm font-serif text-black/60'>Build</span>
                                                 </div>
                                             </div>
@@ -302,25 +196,25 @@ export default function NewLeads() {
                                         </h2>
                                         <AccordionPanel className='text-balance font-serif' pb={4}>
                                             <div className='grid grid-cols-3 gap-3 m-3'>
-                                                {newLeads[propIndex].amenities[0].swimmingPool && (
+                                                {totalProperties[propIndex].amenities[0].swimmingPool && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <FaSwimmingPool size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Swimming Pool</span>
                                                     </div>
                                                 )}
-                                                {newLeads[propIndex].amenities[0].elevator && (
+                                                {totalProperties[propIndex].amenities[0].elevator && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiElevator size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Elevator</span>
                                                     </div>
                                                 )}
-                                                {newLeads[propIndex].amenities[0].security && (
+                                                {totalProperties[propIndex].amenities[0].security && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <FaHouseLock size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Security</span>
                                                     </div>
                                                 )}
-                                                {newLeads[propIndex].amenities[0].garden && (
+                                                {totalProperties[propIndex].amenities[0].garden && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <PiPark size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Garden</span>
@@ -343,34 +237,9 @@ export default function NewLeads() {
                                             <AccordionIcon />
                                         </AccordionButton>
                                         </h2>
-                                        <AccordionPanel className='text-balance font-serif' pb={4}>{newLeads[propIndex].description}</AccordionPanel>
+                                        <AccordionPanel className='text-balance font-serif' pb={4}>{totalProperties[propIndex].description}</AccordionPanel>
                                     </AccordionItem>                                       
                                 </Accordion>
-                                <div className='m-4 flex flex-row gap-4'>
-                                    <button disabled={loading} onClick={()=>handleVerify(newLeads[propIndex]._id,1)} className="flex justify-evenly w-full p-2 shadow-lg shadow-black/20 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4">{listloading ? 'loading...' : 'Accept Listing'}</button>
-                                    <Popover>
-                                        <PopoverTrigger>
-                                            <button disabled={loading} className="flex justify-evenly w-full p-2 shadow-lg shadow-black/20 rounded font-serif border border-black hover:bg-gray-800 hover:text-white mb-4">{rejloading ? 'loading...' : 'Reject Listing'}</button>
-                                        </PopoverTrigger>
-                                        <PopoverContent borderColor='black'>
-                                            <PopoverCloseButton />
-                                            <PopoverHeader fontFamily='serif' fontSize={26}>Confirmation!!</PopoverHeader>
-                                            <PopoverBody>
-                                                <>
-                                                    <div className='flex flex-col'>
-                                                        <label className='font-serif'>Reason for rejection</label>
-                                                        <textarea placeholder='enter description' id="description" name="description" onChange={handleChange} value={rejMessage} className="mb-4 p-3 block w-full h-auto min-h-20 sm:text-sm border-gray-300 rounded-md bg-gray-50"/>
-                                                    </div>
-                                                    <div className="my-4">
-                                                        <div className="h-px bg-black/30 dark:bg-gray-700" />
-                                                    </div>
-                                                    <button  onClick={()=>handleVerify(newLeads[propIndex]._id,-1)} className='flex justify-evenly w-full p-2 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4'>Reject</button>
-                                                    
-                                                </>
-                                            </PopoverBody>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
                             </div>
                         </ModalBody>
                         <MyFooter/>

@@ -3,6 +3,8 @@ import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
 import { FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
 import { FaLocationDot, FaHouseLock } from "react-icons/fa6";
+import { FcApproval,FcCancel } from "react-icons/fc";
+import { MdOutlinePendingActions } from "react-icons/md";
 import { TbRulerMeasure, TbReceiptTax } from "react-icons/tb";
 import { PiPark } from "react-icons/pi";
 import { MdAddHomeWork } from "react-icons/md";
@@ -130,9 +132,9 @@ export default function UserProperty() {
                         <TabPanel>
                         {listedProperties.length ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {pendingProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-md m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-60 rounded-t-md mb-4" />
+                                    {listedProperties.map((property,index) => (
+                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
+                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                             <div className='m-6'>
                                                 {property.offer && (
                                                     <div className='flex flex-row gap-2'>
@@ -150,8 +152,9 @@ export default function UserProperty() {
                                                 </div>
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                    <div className='flex justify-end'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,0)}>More Info</Button>
+                                                    <div className='flex justify-end flex-col'>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <div className='flex font-serif mt-px items-center'>Status : <FcApproval className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -166,8 +169,8 @@ export default function UserProperty() {
                             {pendingProperties.length ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {pendingProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-md m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-60 rounded-t-md mb-4" />
+                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
+                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                             <div className='m-6'>
                                                 {property.offer && (
                                                     <div className='flex flex-row gap-2'>
@@ -185,8 +188,9 @@ export default function UserProperty() {
                                                 </div>
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                    <div className='flex justify-end'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,1)}>More Info</Button>
+                                                    <div className='flex justify-end flex-col'>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <div className='flex font-serif mt-px items-center'>Status : <MdOutlinePendingActions className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -201,8 +205,8 @@ export default function UserProperty() {
                         {rejectedProperties.length ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {rejectedProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-md m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-60 rounded-t-md mb-4" />
+                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
+                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                             <div className='m-6'>
                                                 {property.offer && (
                                                     <div className='flex flex-row gap-2'>
@@ -220,8 +224,9 @@ export default function UserProperty() {
                                                 </div>
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                    <div className='flex justify-end'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,1)}>More Info</Button>
+                                                    <div className='flex justify-end flex-col'>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <div className='flex font-serif mt-px items-center'>Status : <FcCancel className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
                                             </div>                                          

@@ -19,6 +19,7 @@ import AgentProfile from './pages/AgentProfile';
 import UserProperty from './pages/UserProperty';
 import NewLeads from './pages/NewLeads';
 import RecentLeads from './pages/RecentLeads';
+import AgentTotalProp from './pages/AgentTotalProp';
 
 export default function App() {
 
@@ -50,6 +51,9 @@ export default function App() {
       </Route>
       <Route element={<PrivateRoute2 from="agent-leads"/>}>
         <Route path='/recent-leads' element={<RecentLeads/>}/>
+      </Route>
+      <Route element={<PrivateRoute2 from="agent-properties"/>}>
+        <Route path='/properties' element={<AgentTotalProp/>}/>
       </Route>
 
       <Route element={<PrivateRoute from="profile"/>}>

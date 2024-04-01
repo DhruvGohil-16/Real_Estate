@@ -99,6 +99,22 @@ export const verifyrecentlisting = async (req, res, next) => {
     }
 };
 
+export const totallisting = async (req, res, next) => {
+    if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        console.log("totallisting");
+        const totalListings = await list.find({agent: req.params.id });
+        
+        if(totalListings) 
+            res.status(200).json({ success: true, data: totalListings });
+        else
+            next(errhandler(404,"No recent listing"));
+    } catch (error) {
+        console.log(error);
+        next(errhandler(500,error));
+    }
+};
+
 export const updatelisting = async (req, res, next) => {
     if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
     try {
@@ -230,6 +246,27 @@ export const newCount = async (req, res, next) => {
         
         const newCounts = await agent.findById(req.params.id);
         res.status(200).json({ success: true, data: newCounts.new });
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+
+export const totalReqCount = async (req, res, next) => {
+    if(req.agent._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        
+        const counts = await agent.findById(req.params.id);
+
+        const onlyViewed = counts.viewed - ( counts.new + counts.verified + counts.rejected);
+
+        res.status(200).json({ success: true, data: 
+            {   new:counts.new,
+                'only-viewed':onlyViewed,
+                verified:counts.verified,
+                rejected:counts.rejected
+            } 
+        });
+
     } catch (error) {
         next(errhandler(500,error));
     }

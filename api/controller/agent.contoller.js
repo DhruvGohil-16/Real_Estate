@@ -239,7 +239,7 @@ export const updatelisting = async (req, res, next) => {
                 if(updatedProperty && listInfo){
                     var email = process.env.TeamMail;
                     var subject = `Notification: Congratulations on Successfully Listing Your Property!!!`;
-                    var text = `Dear ${propUser.username},\n\n` +
+                    var text = `Dear ${updatedProperty.owner},\n\n` +
                     `     We hope this message finds you well. We are delighted to inform you that your property listing request has been successfully approved by the agent.\n\n` +
                     `     Your property is now live on our platform and available for viewing by potential buyers or tenants. This is a significant milestone, and we congratulate you on successfully listing your property!\n\n` +
                     `     Agent's Name: ${propAgent.name}\n`+

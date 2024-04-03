@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState , useEffect} from 'react'
 import { FooterBrand } from 'flowbite-react'
 import {FaSearch} from 'react-icons/fa'
 import {FcMenu} from 'react-icons/fc'
@@ -9,6 +9,24 @@ import { useSelector } from 'react-redux'
 export default function Header() {
   const navigate = useNavigate();
   const {currentUser} = useSelector(state => state.user);
+  const [searchTerm,setSearchTerm] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('searchTerm', searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  }
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get('searchTerm');
+    if (searchTermFromUrl) {
+      setSearchTerm(searchTermFromUrl);
+    }
+  }, [location.search]);
+
   return (
     <header className='bg-gray-300 shadow-sm ty:fixed df:sticky'>
 
@@ -34,15 +52,17 @@ export default function Header() {
           <Link to='/rent'><div className='p-4 py-6 ty:hidden mdl:inline font-serif hover:border-y-4 hover:border-b-4 hover:border-b-black hover:border-t-gray-300 cursor-pointer'>Rent</div></Link>
         </div>
 
-        <form className='bg-slate-200 flex items-center p-3 rounded-full border font-serif border-amber-100 hover:shadow-lg hover:border-blue-400'>
+        <form onSubmit={handleSubmit} className='bg-slate-200 flex items-center p-3 rounded-full border font-serif border-amber-100 hover:shadow-lg hover:border-blue-400'>
 
           <input className='bg-transparent font-serif placeholder-slate-500 focus:outline-none ty:w-32 df:w-36 ds:w-44 smd0:w-56 smd:w-64 mdl:w-80' autoComplete='off'
            type='text' 
            name='searchbar'
            id='searchbar'
-           placeholder='Address, City, Zip Code or Neighborhood....'/>
+           placeholder='Address, City, Zip Code or Neighborhood....'
+           value={searchTerm}
+           onChange={(e)=>setSearchTerm(e.target.value)}/>
 
-          <button name='search' id='search' onClick={()=>{navigate('/buy')}}>
+          <button type='submit' name='search' id='search'>
             <FaSearch className='text-black/80 flex cursor-pointer'/>
           </button>
 

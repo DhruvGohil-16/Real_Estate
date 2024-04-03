@@ -7,10 +7,9 @@ import AgentHeader from '../components/AgentHeader';
 
 export default function AgentDashboard() {
   
-  const [counts,setCounts] = useState([]);
   const { currentUser} = useSelector((state) => state.user);
   const [data,setData] = useState([]);
-  const colors = ['#E38627', '#C13C37', '#6A2135', '#FF5733'];
+  const colors = ['#E38627', '#C13C37', '#6A2135', '#FF5733','#00FF00'];
   
   const fetchCounts = async () => {
     try {
@@ -19,7 +18,6 @@ export default function AgentDashboard() {
         
         if (Data.success === true){
           console.log(Data);
-          setCounts(Data.data);
           const newData = Object.entries(Data.data).map(([label, value], index) => ({
             value,
             color: colors[index % colors.length],
@@ -40,9 +38,8 @@ export default function AgentDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-200 bg-gradient-to-b from-gray-300 to-transparent">
-      <AgentHeader/>
-
-      <div className="container mx-auto px-4 py-8 m-3 min-h-screen">
+      
+      <div className="container mx-auto px-4 py-8 mb-3 min-h-screen">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
           <div className='flex flex-col gap-4'>
             <div className="col-span-1 md:col-span-1 h-fit bg-white shadow-lg p-4 rounded-md ">

@@ -1,13 +1,15 @@
-import React,{useEffect,useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
+import { useNavigate } from 'react-router-dom';
 import { FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
-import { FaLocationDot,FaHouseLock } from "react-icons/fa6";
+import { FaLocationDot, FaHouseLock, FaRegCalendar } from "react-icons/fa6";
+import { FcApproval } from "react-icons/fc";
 import { TbRulerMeasure, TbReceiptTax } from "react-icons/tb";
 import { PiPark } from "react-icons/pi";
 import { MdAddHomeWork } from "react-icons/md";
 import { GiElevator, GiHomeGarage, GiWoodBeam } from "react-icons/gi";
-import {Modal,
+import { Modal, Button,useDisclosure,
     ModalOverlay,
     ModalContent,
     ModalHeader,
@@ -18,158 +20,146 @@ import {Modal,
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverCloseButton,
-    Box,Button,useDisclosure,useToast}from '@chakra-ui/react'
-import AgentHeader from '../components/AgentHeader'
-import MyFooter from '../components/MyFooter'
+    Box,
+    useToast,
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    NumberIncrementStepper,
+    NumberDecrementStepper,} from '@chakra-ui/react'
+import Header from '../components/Header';
+import MyFooter from '../components/MyFooter';
 import ImageSlider from '../components/ImageSlider';
-import { useNavigate } from 'react-router-dom';
+import ContactUs from './ContactUs';
 
-export default function RecentLeads() {
+export default function Buy() {
 
-    const [recentLeads,setRecentLeads] = useState([]);
-    const [error, setError] = useState("");
-    const [rejMessage, setRejMessage] = useState("");
-    const [loading,setLoading] = useState(false);
-    const [listloading,setListLoading] = useState(false);
-    const [rejloading,setRejLoading] = useState(false);
+    const [listedProperties, setListedProperties] = useState([]);
     const [propIndex, setPropIndex] = useState(0);
+    const [loading,setLoading] = useState(false);
+    const [userPrice,setUserPrice] = useState(0);
+    const [name,setName] = useState("");
+    const [date, setDate] = useState(0);
+    const [error, setError] = useState("");
     const { currentUser} = useSelector((state) => state.user);
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
     const navigate = useNavigate();
-
-    const { isOpen, onOpen, onClose } = useDisclosure();
-
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
-
     const handleIndexClick = (index) => {
+        const currentDate = new Date();
+        const listedDate = new Date(listedProperties[index].listedDate);
+        console.log(currentDate);
+        const differenceMs = currentDate - listedDate;
+        console.log(differenceMs);
+        const differenceDays = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
+        console.log(differenceDays);
+        setDate(differenceDays);
         setPropIndex(index);
         onOpen();
     }
 
-    const handleVerify = async(propId,status) => {
-        setError('');
-        
-        var flag;
-        
-        if(status==1){
-            setListLoading(true);
-            setLoading(true);
-            flag = fetchVerify(propId,status);
-        }
-        else{
-            setRejLoading(true);
-            setLoading(true);
-            if(rejMessage){
-                flag = fetchVerify(propId,status);
-            }
-            else
-                setRejMessage("*required");
-        };
-        const result = await flag;
-
-        if (result === 0) {
-            const mess = status === 1 ? 'listed' : 'rejected';
-            console.log("result 1");
-            setLoading(false);
-            setListLoading(false);
-            setRejLoading(false);
-            setRejMessage('');
-
-            await delay(2000);
-
-            navigate('/agent-dashboard');
-            toast({
-                title: 'Property Listing Request',
-                description: `Property has been ${mess}`,
-                status: 'success',
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-        else{
-            console.log("message");
-            setRejMessage("*already request rejected");
-            setLoading(false);
-            setListLoading(false);
-            setRejLoading(false);
-        }
-    };
-    const handleChange = (e) => {
-        setRejMessage(e.target.value);
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const fetchVerify = async(propId,status) => {
+    const handlePriceChange = (e) => {
+        if(e>listedProperties[propIndex].price || e>listedProperties[propIndex].discountPrice)
+            alert("Your offer is more then asked.\nDo you want to continue?");
+        setUserPrice(e);
+    }
+
+    const handleNameChange = (e) => {   
+        setName(e.target.value)
+    }
+
+    const handleAgentRequest = async(e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
         try {   
             console.log("calling fetch");
-            const res = await fetch(`./api/agent/verify/${currentUser._id}`, { 
-                method: "PATCH", // Adjust the HTTP method based on your API endpoint requirements
+            const res = await fetch(`./api/user/buyReq/${currentUser._id}`, { 
+                method: "post", // Adjust the HTTP method based on your API endpoint requirements
                 headers: {
                 "Content-Type": "application/json",  //format of the request body
             },
-            body: JSON.stringify({status,propId,rejMessage}), // Convert FormData to JSON
+            body: JSON.stringify({offer:userPrice,property:listedProperties[propIndex],username:name}), // Convert FormData to JSON
             });
             console.log("called fetch");
             
             const data = await res.json(); //get json response in data
 
-            console.log("jbvj ");
-            setError(data.message);
-            if (data.success===false)
-                return 1;
-
+            if(data.success===false){
+                setError(data.message);
+            }
+            else{
+                setLoading(false);
+                setError("*Request sent successfully!!!");
+                await delay(2000);
+                onClose();
+                setName("");
+                setError("");
+                toast({
+                    title: 'Buy request',
+                    position: 'top',
+                    description: "Your property buy request sent successfully.",
+                    status: 'success',
+                    duration: 6000,
+                    isClosable: true,
+                });
+                navigate('/buy');
+            }
+            
         } catch (error) {
             setError(error.message);
-            return 1;
+            setLoading(false);
         }
-        return 0;
     }
 
-    const fetchRecentLeads = async () => {
+    const handleContactAgent = (id) => {
+        if(id===currentUser._id)
+            setError("*You cannot buy your own property!!!");
+        else
+            setLoading(true)
+    }
+    const fetchListedProperties = async () => {
         setError('');
         try {
-            const response = await fetch(`/api/agent/verifyRecentReq/${currentUser._id}`);
+            const response = await fetch(`/api/listing/verifiedProp/${currentUser._id}`);
             const Data = await response.json();
             
             if (Data.success === false)
                 setError(Data.message);
             else{
                 setError('');
-                setRecentLeads(Data.data);
-                console.log(Data);
+                setListedProperties(Data.data);
             }
+            console.log(Data.data);
         } catch (error) {
             setError(error);
         }
-
     };
 
     useEffect(() => {
         window.scrollTo(0,0);
-        fetchRecentLeads();
+        fetchListedProperties();
     }, []);
 
   return (
     <div>
         
+
         <div className='flex min-h-screen bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent'>
             <div className="container mx-auto py-8 ">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">New Properties</h2>
-                {recentLeads.length ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {recentLeads.map((property,index) => (
+                <div className="text-xl font-bold text-gray-800 mx-6">Recommended Properties</div>
+                {listedProperties.length ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {listedProperties.map((property,index) => (
                             <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                <img src={property.images[0].url} onClick={() => handleIndexClick(index)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
+                                <img src={property.images[0].url} onClick={() => handleIndexClick(index)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
                                 <div className='m-6'>
                                     {property.offer && (
-                                        <div className='flex flex-row gap-2'>
+                                        <div className='flex flex-row w-fit gap-2'>
                                             <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
                                             <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
                                         </div>
@@ -184,34 +174,43 @@ export default function RecentLeads() {
                                     </div>
                                     <div className='grid grid-flow-col gap-2'>
                                         <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                        <div className='flex justify-end'>
+                                        <div className='flex justify-end flex-col'>
                                             <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                            <div className='flex font-serif mt-px items-center'>Status : <FcApproval className=' mt-1 ml-1' size={25}/></div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                        </div>
                         ))}
                     </div>
                 ) : (
-                    <p>No recent leads...</p>
+                    <p>No properties listed...</p>
                 )}
-                { recentLeads[propIndex] && <Modal isOpen={isOpen} size='full' onClose={onClose}>
+                
+                { listedProperties[propIndex] && <Modal isOpen={isOpen} size='full' onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent>
-                        <ModalHeader fontFamily='serif' fontSize={32} textTransform='uppercase' textAlign='left' >{recentLeads[propIndex].propertyName}</ModalHeader>
-                        <ModalCloseButton _disabled={loading} />
+                        <ModalHeader fontFamily='serif' fontSize={32} textTransform='uppercase' textAlign='left' >{listedProperties[propIndex].propertyName}</ModalHeader>
+                        <ModalCloseButton />
                         <ModalBody>
                             <div>
-                                <ImageSlider images={recentLeads[propIndex].images} />
+                                <div className='flex flex-row gap-1 ml-8 pl-2 items-center'>
+                                    <img src={listedProperties[propIndex].agentProfile} alt="Profile" className="w-8 h-8 rounded-full" />
+                                    <div className='flex flex-col gap-1 font-serif pl-1'>
+                                        <div className='text-xs text-black/70'>Presented by:</div>
+                                        <div><span className='font-semibold text-sm'>{listedProperties[propIndex].agentName}</span> with <span className='font-semibold text-sm'>The Agency</span></div>
+                                    </div>
+                                </div>
+                                <ImageSlider images={listedProperties[propIndex].images} />
                                 <div className='grid grid-flow-row gap-2 m-4'>
-                                    {recentLeads[propIndex].offer && (
+                                    {listedProperties[propIndex].offer && (
                                         <div className='flex flex-row gap-2'>
-                                            <div className="text-black text-2xl line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].price)}</div>
-                                            <div className='text-black text-3xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].discountPrice)}</div>
+                                            <div className="text-black text-2xl line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].price)}</div>
+                                            <div className='text-black text-3xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].discountPrice)}</div>
                                         </div>
                                     )}
-                                    {!recentLeads[propIndex].offer && (
-                                        <div className="text-black text-3xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].price)}</div>
+                                    {!listedProperties[propIndex].offer && (
+                                        <div className="text-black text-3xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].price)}</div>
                                     )}
                                     {/* <div className='flex flex-row gap-10'>
                                         <Popover size='xl'>
@@ -226,40 +225,47 @@ export default function RecentLeads() {
                                         </Popover>
                                     </div> */}
                                     <div className="flex flex-row gap-7 justify-start my-4">
-                                        <div className="text-black "><span className='font-bold'>{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].bedrooms)}</span> bed</div>
-                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].bathrooms)}</span> bath</div>
-                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(recentLeads[propIndex].sqarea)}</span> sqft</div>
+                                        <div className="text-black "><span className='font-bold'>{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].bedrooms)}</span> bed</div>
+                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].bathrooms)}</span> bath</div>
+                                        <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(listedProperties[propIndex].sqarea)}</span> sqft</div>
                                     </div>
                                     <div className='flex flex-row gap-3 items-center mb-4 pb-2 border-solid border-black border-b-2'>
                                         <FaLocationDot size={25} />
-                                        <p className="text-black/80 text-balance font-serif text-lg ">{recentLeads[propIndex].address}</p>                                                              
+                                        <p className="text-black/80 text-balance font-serif text-lg ">{listedProperties[propIndex].address}</p>                                                              
                                     </div>
                                     <div className='w-3/5 mb-5'>
                                         <div className='grid grid-cols-3 gap-y-10'>
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <FaHome size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>{recentLeads[propIndex].propertyType}</span>
+                                                    <span className='font-serif font-semibold'>{listedProperties[propIndex].propertyType}</span>
                                                     <span className='text-sm font-serif text-black/60'>Property type</span>
+                                                </div>
+                                            </div>
+                                            <div className='flex flex-row gap-3 items-center'>
+                                                <FaRegCalendar size={25} />
+                                                <div className='flex flex-col'>
+                                                    <span className='font-serif font-semibold'>{date} days</span>
+                                                    <span className='text-sm font-serif text-black/60'>Time on DrEstate.com</span>
                                                 </div>
                                             </div>
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <TbRulerMeasure size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>₹ {Intl.NumberFormat('en-IN').format((recentLeads[propIndex].price)/(recentLeads[propIndex].sqarea))}</span>
+                                                    <span className='font-serif font-semibold'>₹ {Intl.NumberFormat('en-IN').format((listedProperties[propIndex].price)/(listedProperties[propIndex].sqarea))}</span>
                                                     <span className='text-sm font-serif text-black/60'>Price per sqft</span>
                                                 </div>
                                             </div>
-                                            {recentLeads[propIndex].amenities[0].parking && (
+                                            {listedProperties[propIndex].amenities[0].parking && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiHomeGarage size={25} />
                                                         <div className='flex flex-col'>
-                                                            <span className='text-lg font-serif font-semibold'>{recentLeads[propIndex].noOfVehicle} <span className='text-sm'>Vehicle</span></span>
+                                                            <span className='text-lg font-serif font-semibold'>{listedProperties[propIndex].noOfVehicle} <span className='text-sm'>Vehicle</span></span>
                                                             <span className='text-sm font-serif text-black/60'>Parking</span>
                                                         </div>
                                                     </div>
                                             )}
-                                            {recentLeads[propIndex].furnished && (
+                                            {listedProperties[propIndex].furnished && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiWoodBeam size={25} />
                                                         <span className='font-serif font-semibold'>Furnished</span>
@@ -268,7 +274,7 @@ export default function RecentLeads() {
                                             <div className='flex flex-row gap-3 items-center'>
                                                 <FaHammer size={25} />
                                                 <div className='flex flex-col'>
-                                                    <span className='font-serif font-semibold'>{recentLeads[propIndex].builtDate}</span>
+                                                    <span className='font-serif font-semibold'>{listedProperties[propIndex].builtDate}</span>
                                                     <span className='text-sm font-serif text-black/60'>Build</span>
                                                 </div>
                                             </div>
@@ -297,25 +303,25 @@ export default function RecentLeads() {
                                         </h2>
                                         <AccordionPanel className='text-balance font-serif' pb={4}>
                                             <div className='grid grid-cols-3 gap-3 m-3'>
-                                                {recentLeads[propIndex].amenities[0].swimmingPool && (
+                                                {listedProperties[propIndex].amenities[0].swimmingPool && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <FaSwimmingPool size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Swimming Pool</span>
                                                     </div>
                                                 )}
-                                                {recentLeads[propIndex].amenities[0].elevator && (
+                                                {listedProperties[propIndex].amenities[0].elevator && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <GiElevator size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Elevator</span>
                                                     </div>
                                                 )}
-                                                {recentLeads[propIndex].amenities[0].security && (
+                                                {listedProperties[propIndex].amenities[0].security && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <FaHouseLock size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Security</span>
                                                     </div>
                                                 )}
-                                                {recentLeads[propIndex].amenities[0].garden && (
+                                                {listedProperties[propIndex].amenities[0].garden && (
                                                     <div className='flex flex-row gap-3 items-center'>
                                                         <PiPark size={25} />
                                                         <span className='text-sm font-serif text-black/60'>Garden</span>
@@ -338,44 +344,47 @@ export default function RecentLeads() {
                                             <AccordionIcon />
                                         </AccordionButton>
                                         </h2>
-                                        <AccordionPanel className='text-balance font-serif' pb={4}>{recentLeads[propIndex].description}</AccordionPanel>
-                                    </AccordionItem>                                       
+                                        <AccordionPanel className='text-balance font-serif' pb={4}>{listedProperties[propIndex].description}</AccordionPanel>
+                                    </AccordionItem>                                             
                                 </Accordion>
-                                <div className='m-4 flex flex-row gap-4'>
-                                    <button disabled={loading} onClick={()=>handleVerify(recentLeads[propIndex]._id,1)} className="flex justify-evenly w-full p-2 shadow-lg shadow-black/20 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4">{listloading ? 'loading...' : 'Accept Listing'}</button>
-                                    <Popover>
-                                        <PopoverTrigger>
-                                            <button disabled={loading} className="flex justify-evenly w-full p-2 shadow-lg shadow-black/20 rounded font-serif border border-black hover:bg-gray-800 hover:text-white mb-4">{rejloading ? 'loading...' : 'Reject Listing'}</button>
-                                        </PopoverTrigger>
-                                        <PopoverContent borderColor='black'>
-                                            <PopoverCloseButton />
-                                            <PopoverHeader fontFamily='serif' fontSize={26}>Confirmation!!</PopoverHeader>
-                                            <PopoverBody>
-                                                <>
-                                                    <div className='flex flex-col'>
-                                                        <label className='font-serif'>Reason for rejection</label>
-                                                        <textarea placeholder='enter description' id="description" name="description" onChange={handleChange} value={rejMessage} className="mb-4 p-3 block w-full h-auto min-h-20 sm:text-sm border-gray-300 rounded-md bg-gray-50"/>
-                                                    </div>
-                                                    <div className="my-4">
-                                                        <div className="h-px bg-black/30 dark:bg-gray-700" />
-                                                    </div>
-                                                    <button disabled={loading} onClick={()=>handleVerify(recentLeads[propIndex]._id,-1)} className='flex justify-evenly w-full p-2 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4'>Reject</button>
-                                                    
-                                                </>
-                                            </PopoverBody>
-                                        </PopoverContent>
-                                    </Popover>
+                                <div className='flex flex-col justify-center m-4 gap-2'>
+                                    {!loading && 
+                                        (<button onClick={()=>handleContactAgent(listedProperties[propIndex].user)} className='flex justify-evenly w-full p-2 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white'>Contact Agent</button>)
+                                    }
+
+                                    {loading && 
+                                    (
+                                        <form autoComplete='off' method='POST' onSubmit={handleAgentRequest}> 
+                                            <div className='flex flex-row gap-14 border-black/50 border-2 w-fit p-4 rounded-lg'>
+                                                <div className='flex flex-col gap-2'>   
+                                                    <label htmlFor="price" className="block font-serif text-lg text-black">Your offer price</label>
+                                                    <NumberInput onChange={handlePriceChange} className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-black rounded-md bg-gray-50" min={1000} precision={2} step={100000}>
+                                                        <NumberInputField value={userPrice}/>
+                                                        <NumberInputStepper>
+                                                            <NumberIncrementStepper/>
+                                                            <NumberDecrementStepper/>
+                                                        </NumberInputStepper>
+                                                    </NumberInput>
+                                                    <input type='text' id="name" name="name" required placeholder='Enter your full-name' value={name} onChange={handleNameChange} className='mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50'/>
+                                                </div>
+                                                <div className='flex justify-end flex-col gap-2 items-start'>
+                                                    <button type='submit' className='w-fit h-fit p-2 rounded-lg font-serif  border border-black hover:bg-red-600 hover:text-white'>Send Request</button>
+                                                    <button onClick={()=>{setLoading(false);setError('');setName('')}} className='w-fit h-fit p-2 rounded-lg font-serif  border border-black hover:bg-red-600 hover:text-white'>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    )}
                                 </div>
+                                <p className="m-3 text-red-600 font-serif text-lg">{error}</p>
                             </div>
                         </ModalBody>
                         <MyFooter/>
                     </ModalContent>
                 </Modal>}
             </div>
-            <p className="m-3 text-red-600 text-sm">{error}</p>
         </div>
+        <ContactUs/>
         <MyFooter/>
-      
     </div>
   )
 }

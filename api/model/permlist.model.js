@@ -5,6 +5,14 @@ const userlisting = new mongoose.Schema({
         type: String,
         required: true
     },
+    owner:{
+        type: String,
+        required: true
+    },
+    agentName:{
+        type: String,
+        required:true
+    },
     propertyId:{
         type: String,
         required: true,
@@ -14,11 +22,23 @@ const userlisting = new mongoose.Schema({
         type: String,
         required: true
     },
+    userProfile:{
+        type: String,
+        required: true
+    },
     agent:{
         type:String,
         required:true
     },
+    agentProfile:{
+        type: String,
+        required: true
+    },
     agentEmail:{
+        type:String,
+        required:true
+    },
+    userEmail:{
         type:String,
         required:true
     },
@@ -84,6 +104,10 @@ const userlisting = new mongoose.Schema({
     },
     furnished: {
         type: Boolean,
+    },
+    sold: {
+        type: Boolean,
+        default:false
     },
     listedDate: {
         type: Date,

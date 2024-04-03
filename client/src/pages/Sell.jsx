@@ -40,6 +40,7 @@ export default function Sell() {
         propertyDetails: {
             propertyName: "",
             propertyType: "",
+            owner:"",
             description: "",
             address: "",
             bedrooms: 1,
@@ -456,6 +457,8 @@ export default function Sell() {
         }
         count=count+formData.propertyDetails.bathrooms+formData.propertyDetails.bedrooms;
         setImgCount(count);
+        if(!formData.propertyDetails.offer)
+            setFormData({...formData,propertyDetails:{...formData.propertyDetails,discountPrice:formData.propertyDetails.price}});
 
         if(formData.propertyDetails.images.length<imgCount){
             setError("Upload all the images!!!");
@@ -512,7 +515,7 @@ export default function Sell() {
 
   return (
     <>
-        <Header/>
+        
 
         <div className="flex justify-left items-center bg-cover bg-no-repeat bg-[url('./src/background1.jpeg')]">
             <div className="w-2/4 m-8 p-8 h-auto bg-white bg-opacity-45 shadow-md rounded-lg">
@@ -522,6 +525,10 @@ export default function Sell() {
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">property-name</label>
                             <input type="text" id="propertyName" name="propertyName" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
+                        </div>
+                        <div>
+                            <label htmlFor="owner" className="block text-sm font-medium text-gray-700">full-name</label>
+                            <input type="text" id="owner" name="owner" required onChange={handleChange} className="mt-1 p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50" />
                         </div>
                     </div>
 

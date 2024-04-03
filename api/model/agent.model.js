@@ -68,6 +68,12 @@ const agentSchema = new mongoose.Schema({
         default: 0
     },
 
+    sold:{
+        type: Number,
+        required: true,
+        default: 0
+    },
+
     profilePic :{
         type : String,
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk8Gl9eN3We2TcCYbPyAxqG6SqN02Wey-1vB0iuhZfyw&s",

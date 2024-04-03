@@ -2,10 +2,11 @@ import React,{useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
 import { FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
-import { FaLocationDot, FaHouseLock } from "react-icons/fa6";
 import { FcApproval,FcCancel } from "react-icons/fc";
-import { MdOutlinePendingActions } from "react-icons/md";
+import { FaLocationDot,FaHouseLock } from "react-icons/fa6";
+import { IoIosDoneAll } from "react-icons/io";
 import { TbRulerMeasure, TbReceiptTax } from "react-icons/tb";
+import { MdOutlinePendingActions } from "react-icons/md";
 import { PiPark } from "react-icons/pi";
 import { MdAddHomeWork } from "react-icons/md";
 import { GiElevator, GiHomeGarage, GiWoodBeam } from "react-icons/gi";
@@ -21,22 +22,17 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel,Modal, Button,useDisclosure,
     AccordionPanel,
     AccordionIcon,
     Box,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverCloseButton,} from '@chakra-ui/react'
+   } from '@chakra-ui/react'
 import Header from '../components/Header';
 import MyFooter from '../components/MyFooter';
 import ImageSlider from '../components/ImageSlider';
-import ContactUs from './ContactUs';
 
 export default function UserProperty() {
 
     const [pendingProperties, setPendingProperties] = useState([]);
     const [listedProperties, setListedProperties] = useState([]);
     const [rejectedProperties, setRejectedProperties] = useState([]);
+    const [soldProperties, setSoldProperties] = useState([]);
     const [propIndex, setPropIndex] = useState(0);
     const [property,setProperty] = useState([]);
     const [error, setError] = useState("");
@@ -49,6 +45,8 @@ export default function UserProperty() {
             setProperty(listedProperties);
         else if(flag===1)
             setProperty(pendingProperties);
+        else if(flag===2)
+            setProperty(soldProperties);
         else
             setProperty(rejectedProperties);
         onOpen();
@@ -65,6 +63,24 @@ export default function UserProperty() {
             else{
                 setError('');
                 setPendingProperties(Data.data);
+                console.log(Data);
+            }
+        } catch (error) {
+            setError(error);
+        }
+    };
+
+    const fetchSoldProperties = async () => {
+        setError('');
+        try {
+            const response = await fetch(`/api/listing/soldProperty/${currentUser._id}`);
+            const Data = await response.json();
+            
+            if (Data.success === false)
+                setError(Data.message);
+            else{
+                setError('');
+                setSoldProperties(Data.data);
                 console.log(Data);
             }
         } catch (error) {
@@ -111,12 +127,13 @@ export default function UserProperty() {
         fetchRejectedProperties();
         fetchListedProperties();
         fetchPendingProperties();
+        fetchSoldProperties();
         setProperty([]);
     }, []);
 
   return (
     <div>
-        <Header/>
+        
 
         <div className='flex min-h-screen bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent'>
             <div className="container mx-auto py-8 ">
@@ -126,6 +143,7 @@ export default function UserProperty() {
                         <Tab>Listed</Tab>
                         <Tab>Pending</Tab>
                         <Tab>Rejected</Tab>
+                        <Tab>Sold</Tab>
                     </TabList>
 
                     <TabPanels>
@@ -134,10 +152,10 @@ export default function UserProperty() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {listedProperties.map((property,index) => (
                                         <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
+                                            <img src={property.images[0].url} onClick={() => handleIndexClick(index,0)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
                                             <div className='m-6'>
                                                 {property.offer && (
-                                                    <div className='flex flex-row gap-2'>
+                                                    <div className='flex flex-row w-fit gap-2'>
                                                         <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
                                                         <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
                                                     </div>
@@ -146,14 +164,14 @@ export default function UserProperty() {
                                                     <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
                                                 )}
                                                 <div className="flex flex-row gap-7 justify-start my-4">
-                                                    <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
+                                                    <div className="text-gray-600 "><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
+                                                    <div className="text-gray-600"><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
+                                                    <div className="text-gray-600"><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
                                                 </div>
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
                                                     <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,0)}>More Info</Button>
                                                         <div className='flex font-serif mt-px items-center'>Status : <FcApproval className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
@@ -170,10 +188,10 @@ export default function UserProperty() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {pendingProperties.map((property,index) => (
                                         <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
+                                            <img src={property.images[0].url} onClick={() => handleIndexClick(index,1)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
                                             <div className='m-6'>
                                                 {property.offer && (
-                                                    <div className='flex flex-row gap-2'>
+                                                    <div className='flex flex-row w-fit gap-2'>
                                                         <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
                                                         <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
                                                     </div>
@@ -189,7 +207,7 @@ export default function UserProperty() {
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
                                                     <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,1)}>More Info</Button>
                                                         <div className='flex font-serif mt-px items-center'>Status : <MdOutlinePendingActions className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
@@ -206,7 +224,7 @@ export default function UserProperty() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {rejectedProperties.map((property,index) => (
                                         <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                            <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
+                                            <img src={property.images[0].url} onClick={() => handleIndexClick(index,3)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
                                             <div className='m-6'>
                                                 {property.offer && (
                                                     <div className='flex flex-row gap-2'>
@@ -225,7 +243,7 @@ export default function UserProperty() {
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
                                                     <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,3)}>More Info</Button>
                                                         <div className='flex font-serif mt-px items-center'>Status : <FcCancel className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
@@ -235,6 +253,42 @@ export default function UserProperty() {
                                 </div>
                             ) : (
                                 <p>No properties rejected...</p>
+                            )}
+                        </TabPanel>
+                        <TabPanel>
+                        {soldProperties.length ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {soldProperties.map((property,index) => (
+                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
+                                        <img src={property.images[0].url} onClick={() => handleIndexClick(index,2)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
+                                        <div className='m-6'>
+                                            {property.offer && (
+                                                <div className='flex flex-row gap-2'>
+                                                    <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
+                                                    <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
+                                                </div>
+                                            )}
+                                            {!property.offer && (
+                                                <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
+                                            )}
+                                            <div className="flex flex-row gap-7 justify-start my-4">
+                                                <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
+                                                <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
+                                                <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
+                                            </div>
+                                            <div className='grid grid-flow-col gap-2'>
+                                                <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
+                                                <div className='flex justify-end flex-col'>
+                                                    <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,2)}>More Info</Button>
+                                                    <div className='flex font-serif mt-px items-center'>Status : <IoIosDoneAll className=' mt-1 ml-1' size={25}/></div>
+                                                </div>
+                                            </div>
+                                        </div>                                          
+                                    </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No properties sold...</p>
                             )}
                         </TabPanel>
                     </TabPanels>

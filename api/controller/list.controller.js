@@ -1,5 +1,6 @@
 import agent from "../model/agent.model.js";
 import list from "../model/list.model.js";
+import permlist from "../model/permlist.model.js";
 import user from "../model/user.model.js";
 import { errhandler } from "../utils/error.js";
 import { sendEmail } from "../utils/sendEmail.js";
@@ -21,6 +22,7 @@ export const listing = async (req,res,next) => {
 
         const newProperty = new list({
             propertyName: req.body.formData.propertyDetails.propertyName,
+            owner:req.body.formData.propertyDetails.owner,
             user: req.body.userId,
             agent: agentDetails._id,
             propertyType: req.body.formData.propertyDetails.propertyType,
@@ -55,7 +57,7 @@ export const listing = async (req,res,next) => {
 
         var email = process.env.TeamMail;
         var subject = `Welcome to DrEstate!!! 🏡 Let's Get Your Property Listed!`;
-        var text = `Dear ${propUser.username},\n\n` +
+        var text = `Dear ${listProp.owner},\n\n` +
         `     We are delighted to welcome you to DrEstate, your premier destination for all things real estate!\n\n` +
         `     At DrEstate, we pride ourselves on offering top-notch services tailored to meet your property needs. Whether you're looking to list your property or find your dream home, our dedicated team is here to assist you every step of the way.\n\n` +
         `     Your recent property listing request has been successfully received. Our team of experts will carefully review your submission to ensure that it meets our quality standards. Please note that this verification process may take up to 7-8 working days.\n\n` +
@@ -73,6 +75,7 @@ export const listing = async (req,res,next) => {
         `     We're writing to inform you that a new lead has been assigned to you for verification. Please find the details below:\n\n` +
         `     Your recent property listing request has been successfully received. Our team of experts will carefully review your submission to ensure that it meets our quality standards. Please note that this verification process may take up to 7-8 working days.\n\n` +
         `   Lead Name: ${listProp.propertyName}\n`+
+        `   Owner Name: ${listProp.owner}\n`+
         `   Owner Contact Information: ${propUser.email}\n\n`+
         `     Your prompt attention to this matter is greatly appreciated. Kindly review the lead and take the necessary actions within the next 7-8 working days.\n\n` +
         `     Kindly note that this is an automated email, and we kindly request you not to reply to it. However, Should you have any questions or require further assistance, please don't hesitate to reach out to us.\n\n` +
@@ -112,10 +115,50 @@ export const pendinglisting = async (req, res, next) => {
 export const verifiedlisting = async (req, res, next) => {
     if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
     try {
-        const verifiedListings = await list.find({ reqAccepted: 1, user: req.params.id });
+        const verifiedListings = await permlist.find({ user:req.params.id,sold:false });
 
         if(verifiedListings) 
             res.status(200).json({ success: true, data: verifiedListings });
+        else
+            next(errhandler(404,"No verified listing"));
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+export const soldlisting = async (req, res, next) => {
+    if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        const soldListings = await permlist.find({ user:req.params.id,sold:true });
+
+        if(soldListings) 
+            res.status(200).json({ success: true, data: soldListings });
+        else
+            next(errhandler(404,"No verified sold"));
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+
+export const listedProp = async (req, res, next) => {
+    try {
+        const listedProps = await permlist.find({sold:false});
+        console.log(listedProps);
+        if(listedProps) 
+            res.status(200).json({ success: true, data: listedProps });
+        else
+            next(errhandler(404,"No verified listing"));
+    } catch (error) {
+        next(errhandler(500,error));
+    }
+};
+
+export const permlisting = async (req, res, next) => {
+    if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
+    try {
+        const permlistings = await permlist.find({sold:false});
+
+        if(permlistings) 
+            res.status(200).json({ success: true, data: permlistings });
         else
             next(errhandler(404,"No verified listing"));
     } catch (error) {

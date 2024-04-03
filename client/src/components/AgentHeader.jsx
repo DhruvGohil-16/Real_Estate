@@ -7,6 +7,7 @@ export default function AgentHeader() {
   
     const { currentUser} = useSelector((state) => state.user);
     const [count,setCount] = useState(0);
+    const [newBuyCount,setNewBuyCount] = useState(0);
 
     const fetchNewCount = async () => {
         setCount(0);
@@ -28,7 +29,28 @@ export default function AgentHeader() {
 
     };
 
+    const fetchNewBuyCount = async () => {
+        setNewBuyCount(0);
+        try {
+            const response = await fetch(`/api/agent/newBuyCount/${currentUser._id}`);
+            const Data = await response.json();
+            
+            if(Data.success===false){
+                setNewBuyCount(0);
+                console.log(Data.message);
+            }
+            else
+                setNewBuyCount(Data.data);
+
+        } catch (error) {
+            setNewBuyCount(0);
+            console.log(error);
+        }
+
+    };
+
     useEffect(() => {
+        fetchNewBuyCount();
         fetchNewCount();
     },[]);
 
@@ -49,8 +71,8 @@ export default function AgentHeader() {
 
             </h1>
           </Link>
-          <div className="flex items-center space-x-4 ">
-            <Link to="/new-leads" className="hover:text-blue-800 flex flex-row">
+          <div className="flex items-center gap-1  space-x-4 ">
+            <Link to="/new-leads" className="hover:text-blue-800 font-serif flex flex-row">
                 New Leads
                 {count !==0 && (
                     <div className='-mt-2 ml-1'>
@@ -66,8 +88,29 @@ export default function AgentHeader() {
 
                 }
             </Link>
-            <Link to="/recent-leads" className="hover:text-blue-800 flex flex-row">
+          
+            <Link to="/recent-leads" className="hover:text-blue-800 mr-5 font-serif flex flex-row">
                 Recent Leads
+            </Link>
+
+            <Link to="/new-buy-leads" className="hover:text-blue-800 font-serif flex flex-row">
+                New-Buy-leads
+                {newBuyCount!==0 && (
+                    <div className='-mt-2 ml-1'>
+                        <span className="relative inline-flex items-center justify-center h-5 w-5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-700 opacity-75"></span>
+                            <span className="relative inline-flex items-center justify-center rounded-full h-full w-full bg-sky-500 text-center">{newBuyCount}</span>
+                        </span>
+                    </div>
+                )}
+                {newBuyCount ===0 && (
+                    <div className='-mt-2 ml-1 h-5 w-5'/>
+                )
+
+                }
+            </Link>
+            <Link to="/recent-buy-leads" className="hover:text-blue-800 font-serif flex flex-row">
+                Recent-Buy-Leads
             </Link>
             <Link to="/agent-profile" className="flex items-center space-x-2">
               <img src={currentUser.profilePic} alt="Profile" className="w-8 h-8 rounded-full" />

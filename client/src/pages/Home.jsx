@@ -1,90 +1,111 @@
-import React,{useEffect} from 'react'
-import Header from '../components/Header'
+import React,{useEffect,useState} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {useSelector} from 'react-redux';
+import Header from '../components/Header';
 import MyFooter from '../components/MyFooter';
 import ContactUs from './ContactUs';
 
 export default function Home() {
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-  const properties = [
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [properties,setProperties] = useState([]);
+  const { currentUser} = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  
+  const images = [
     {
-      id: 1,
-      image: 'https://ap.rdcpix.com/523d3080250805d299aec06de4f3970dl-m2547209115od-w480_h360_x2.webp',
-      title: 'Modern Apartment in City Center',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img3.jpg',
     },
     {
-      id: 2,
-      image: 'https://ap.rdcpix.com/30942b3fa2c96947481d9f8c8050d35el-m2352547531od-w480_h360_x2.webp',
-      title: 'Spacious Family Home with Garden',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img4.jpg',
     },
     {
-      id: 3,
-      image: 'https://ap.rdcpix.com/773df21770e2dfcf3d103dfa2a89cde1l-m2772254422od-w480_h360_x2.webp',
-      title: 'Luxury Villa with Ocean View',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img5.jpg',
     },
     {
-      id: 4,
-      image: 'https://d21o7odkaa9pv4.cloudfront.net/b96651eec45236e894001151a5939a4852ecf8b4_md2.jpg',
-      title: 'Cozy Countryside Cottage',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img6.jpg',
     },
     {
-      id: 5,
-      image: 'https://ap.rdcpix.com/49e70c75ebe91fadf8c9629430a9eca7l-m2814270085od-w480_h360_x2.webp',
-      title: 'Urban Loft in Trendy Neighborhood',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img7.jpg',
     },
     {
-      id: 6,
-      image: 'https://ap.rdcpix.com/3350ecd78c62674e514bd9abff6457adl-m2247399525od-w480_h360_x2.webp',
-      title: 'Elegant Townhouse in Historic District',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
-    },
-    {
-      id: 7,
-      image: 'https://ap.rdcpix.com/992ee7c7dfe24e1a132023f81a65527el-m2543379523od-w480_h360_x2.webp',
-      title: 'Rustic Mountain Cabin with Stunning Views',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor neque in ante fermentum dapibus.',
+      url: './src/img8.jpg',
     },
   ];
+
+  const fetchListedProperties = async () => {
+    
+    try {
+        const response = await fetch('/api/listing/listedProp');
+        const Data = await response.json();
+        
+        if (Data.success === false)
+            console.log(Data.message);
+        else{
+            console.log(Data);
+            setProperties(Data.data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchListedProperties();
+  }, []);
+
   return (
     <div>
-      <Header/>
-      <div>
-        <section id="home" className="relative bg-cover bg-center py-24">
-          <div className="absolute inset-0 bg-gradient-to-b from-black to-transparent opacity-75"></div>
-          <div className="container mx-auto relative z-10 text-center">
-            <h1 className="text-5xl md:text-6xl text-white font-bold leading-tight mb-4">Welcome to our Real Estate Website</h1>
-            <p className="text-lg text-white mb-8">Find your dream home with us</p>
-            <a href="#properties" className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-full text-lg font-semibold transition duration-300 ease-in-out">View Properties</a>
-          </div>
-        </section>
-
-        <section id="properties" className="py-16 m-2 bg-gray-100">
-          <div className="container mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">Featured Properties</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {properties.map(property => (
-                <div key={property.id} className="group bg-white rounded-lg overflow-hidden shadow-md relative">
-                  <img src={property.image} alt={property.title} className="w-full h-64 object-cover object-center transition duration-300 ease-in-out transform group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
-                    <div className="text-center text-white">
-                      <h3 className="text-xl font-semibold mb-2">{property.title}</h3>
-                      <p className="text-gray-200">{property.description}</p>
-                      <a href="#" className="block mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full text-center font-semibold transition duration-300 ease-in-out">View Property</a>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      
+      <div className='flex flex-col'>
+        <div id="home" className="relative bg-cover bg-center pb-24 h-96">
+          <img className='absolute w-full h-full' src={images[currentIndex].url} alt={`Image ${currentIndex}`} />
+          <div className="mx-auto pt-4 h-full flex flex-col relative z-10 justify-center items-center text-center">
+            <h1 className="text-5xl md:text-6xl text-white font-bold font-serif leading-tight mb-4 text-center"><span className='block'>The #1 site real estate </span><span>professionals trust*</span></h1>
+            <p className="text-xl font-serif text-white mb-8">Find your dream home with us</p>
+            <div className='flex flex-row gap-10'>
+              <Link to='/buy'><div className='p-4 py-6 ty:hidden mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200  cursor-pointer'>Buy</div></Link>
+              <Link to='/sell'><div className='p-4 py-6 ty:hidden  mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200 cursor-pointer'>Sell</div></Link>
+              <Link to='/rent'><div className='p-4 py-6 ty:hidden mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200 cursor-pointer'>Rent</div></Link>
             </div>
           </div>
-        </section>
+        </div>
+
+        <div id="properties" className=" relative py-16 mb-2 bg-gray-100">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/25 to-transparent opacity-75"></div>
+            <div className="container mx-auto">
+              <h2 className="text-3xl font-bold font-serif relative z-10 text-center mb-8">Featured Properties</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {properties.map((property,index) => (
+                  <div key={property.propertyId} onClick={()=>{navigate('/buy')}} 
+                    className="group bg-slate-100 rounded-lg overflow-hidden shadow-xl cursor-pointer relative">
+                    <img src={property.images[0]} alt={property.propertyName} className="w-full h-64 object-cover object-center transition duration-300 ease-in-out transform group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 ease-in-out">
+                      <div className="flex flex-col w-full items-center m-4 font-serif text-white">
+                        <h3 className="text-xl w-full text-left font-semibold mb-2">{property.propertyName}</h3>
+                        <div className='flex flex-row gap-1 w-full'>
+                          <div className="text-md font-semibold mb-2">{property. city} -</div>
+                          <div className="text-md font-semibold mb-2">{property. state} -</div>
+                          <div className="text-md font-semibold mb-2">{property. country}</div>
+                        </div>
+                        <p className="text-gray-200 w-full text-left font-serif overflow-hidden line-clamp-3 text-ellipsis">{property.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+        </div>
 
         <ContactUs/>
 

@@ -9,7 +9,6 @@ import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import Signin from './pages/Signin';
 import Profile from './pages/Profile';
-import About from './pages/About';
 import PrivateRoute from './components/privateRoute';
 import Sell from './pages/Sell';
 import AgentDashboard from './pages/AgentDashboard';
@@ -20,12 +19,18 @@ import UserProperty from './pages/UserProperty';
 import NewLeads from './pages/NewLeads';
 import RecentLeads from './pages/RecentLeads';
 import AgentTotalProp from './pages/AgentTotalProp';
+import Buy from './pages/Buy';
+import RecentBuyLead from './pages/RecentBuyLead';
+import NewBuyLead from './pages/NewBuyLead';
+import Header from './components/Header';
+import AgentHeader from './components/AgentHeader';
 
 export default function App() {
 
   const { role} = useSelector((state) => state.user);
   return (
   <Router>
+    {role==='agent' ?(<AgentHeader/>):(<Header/>)}
     <Routes>
       
       <Route element={role === 'agent' ? <AgentDashboard /> : <PrivateRoute3 from="home"/>}>
@@ -52,6 +57,12 @@ export default function App() {
       <Route element={<PrivateRoute2 from="agent-leads"/>}>
         <Route path='/recent-leads' element={<RecentLeads/>}/>
       </Route>
+      <Route element={<PrivateRoute2 from="agent-leads"/>}>
+        <Route path='/new-buy-leads' element={<NewBuyLead/>}/>
+      </Route>
+      <Route element={<PrivateRoute2 from="agent-leads"/>}>
+        <Route path='/recent-buy-leads' element={<RecentBuyLead/>}/>
+      </Route>
       <Route element={<PrivateRoute2 from="agent-properties"/>}>
         <Route path='/properties' element={<AgentTotalProp/>}/>
       </Route>
@@ -68,7 +79,7 @@ export default function App() {
         <Route path='/sell' element={<Sell />}/>
       </Route>
       <Route element={<PrivateRoute from="buy"/>}>
-        <Route path='/buy' element={<Sell />}/>
+        <Route path='/buy' element={<Buy/>}/>
       </Route>
       <Route element={<PrivateRoute from="rent"/>}>
         <Route path='/rent' element={<Sell />}/>

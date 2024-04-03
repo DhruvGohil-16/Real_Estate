@@ -25,7 +25,6 @@ import {Modal,
     PopoverBody,
     PopoverCloseButton,
     Box,Button,useDisclosure, useToast}from '@chakra-ui/react'
-import AgentHeader from '../components/AgentHeader'
 import MyFooter from '../components/MyFooter'
 import ImageSlider from '../components/ImageSlider';
 import { useNavigate } from 'react-router-dom';
@@ -75,7 +74,6 @@ export default function NewLeads() {
     }
     const handleVerify = async(propId,status) => {
         setError('');
-        
         var flag;
         
         if(status==1){
@@ -117,7 +115,6 @@ export default function NewLeads() {
             setLoading(false);
             setListLoading(false);
             setRejLoading(false);
-            setRejMessage('');
         }
     };
 
@@ -136,7 +133,6 @@ export default function NewLeads() {
             const data = await res.json(); //get json response in data
 
             setError(data.message);
-            setRejMessage("");
             if (data.success===false)
                 return 1;
 
@@ -175,7 +171,7 @@ export default function NewLeads() {
 
   return (
     <div>
-        <AgentHeader key={propIndex} />
+        
         <div className='flex min-h-screen bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent'>
             <div className="container mx-auto py-8 ">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">New Properties</h2>
@@ -183,7 +179,7 @@ export default function NewLeads() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {newLeads.map((property,index) => (
                             <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                <img src={property.images[0].url} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
+                                <img src={property.images[0].url} onClick={() => handleIndexClick(index)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4" />
                                 <div className='m-6'>
                                     {property.offer && (
                                         <div className='flex flex-row gap-2'>
@@ -195,9 +191,9 @@ export default function NewLeads() {
                                         <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
                                     )}
                                     <div className="flex flex-row gap-7 justify-start my-4">
-                                        <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
-                                        <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
-                                        <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
+                                        <div className="text-gray-600 "><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
+                                        <div className="text-gray-600"><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
+                                        <div className="text-gray-600"><span className='text-black font-bold font-serif'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
                                     </div>
                                     <div className='grid grid-flow-col gap-2'>
                                         <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
@@ -330,7 +326,7 @@ export default function NewLeads() {
                                         </AccordionPanel>
                                     </AccordionItem>                                             
                                 </Accordion>
-                                <Accordion className='mx-4 mb-28' allowToggle>
+                                <Accordion className='mx-4 mb-10' allowToggle>
                                     <AccordionItem>
                                         <h2>
                                         <AccordionButton borderColor='black'  borderTop='2px solid'>
@@ -364,7 +360,7 @@ export default function NewLeads() {
                                                     <div className="my-4">
                                                         <div className="h-px bg-black/30 dark:bg-gray-700" />
                                                     </div>
-                                                    <button  onClick={()=>handleVerify(newLeads[propIndex]._id,-1)} className='flex justify-evenly w-full p-2 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4'>Reject</button>
+                                                    <button disabled={loading}  onClick={()=>handleVerify(newLeads[propIndex]._id,-1)} className='flex justify-evenly w-full p-2 rounded font-serif  border border-black hover:bg-gray-800 hover:text-white mb-4'>Reject</button>
                                                     
                                                 </>
                                             </PopoverBody>

@@ -545,9 +545,6 @@ export default function Sell() {
                                 <option value="House">House</option>
                                 <option value="Condo">Condo</option>
                                 <option value="Townhouse">Townhouse</option>
-                                <option value="Land">Land</option>
-                                <option value="Commercial">Commercial</option>
-                                <option value="Other">Other</option>
                             </select>
                         </div>
                         

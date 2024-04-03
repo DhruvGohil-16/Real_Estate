@@ -255,6 +255,10 @@ export default function SignUp() {
         setError(null);
         setAgConfirmPasswordMessage(null);
       }
+      else if(data.message==="Agent exists"){
+        setError("*Agent already exists in these location!!!");
+        setAgEmail(null);
+      }
       else{
         setError(null);
         setAgEmail(null);

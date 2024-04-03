@@ -36,15 +36,7 @@ export default function Home() {
   const fetchListedProperties = async () => {
     
     try {
-        const response = await fetch('/api/listing/listedProp');
-        const Data = await response.json();
         
-        if (Data.success === false)
-            console.log(Data.message);
-        else{
-            console.log(Data);
-            setProperties(Data.data);
-        }
     } catch (error) {
         console.log(error);
     }

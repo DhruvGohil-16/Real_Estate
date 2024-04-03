@@ -139,18 +139,6 @@ export const soldlisting = async (req, res, next) => {
     }
 };
 
-export const listedProp = async (req, res, next) => {
-    try {
-        const listedProps = await permlist.find({sold:false});
-        console.log(listedProps);
-        if(listedProps) 
-            res.status(200).json({ success: true, data: listedProps });
-        else
-            next(errhandler(404,"No verified listing"));
-    } catch (error) {
-        next(errhandler(500,error));
-    }
-};
 
 export const permlisting = async (req, res, next) => {
     if(req.user._id !== req.params.id) return next(errhandler(401,"*You are not authorized to do so!!!"));
@@ -177,5 +165,103 @@ export const rejectedlisting = async (req, res, next) => {
             next(errhandler(404,"No rejected listing"));
     } catch (error) {
         next(errhandler(500,error));
+    }
+};
+
+export const listedProp = async (req, res, next) => {
+    try {
+        
+        const limit  = parseInt(req.query.limit) || 9;
+        const startIndex = parseInt(req.query.startIndex) || 0;
+
+        let offer = req.query.offer;
+
+        if(offer === undefined || offer === 'false'){
+            offer = {$in: [false,true]};
+        }
+
+        let furnished = req.query.furnished;
+
+        if(furnished === undefined || furnished === 'false'){
+            furnished = {$in: [false,true]};
+        }
+
+        let propertyType = req.query.propertyType;
+
+        if(propertyType === undefined || propertyType === 'all'){
+            propertyType = {$in: ['Apartment', 'House', 'Condo','Townhouse']};
+        }
+
+        let country = req.query.country;
+
+        if(country === undefined || country === 'all'){
+            country = {$in: ['India','USA']};
+        }
+
+        let state = req.query.state;
+
+        if(state === undefined || state === 'all'){
+            state = {$in: ['Gujarat', 'Maharashtra', 'Delhi','New York', 'California', 'Texas']};
+        }
+
+        let city = req.query.city;
+
+        if(city === undefined || city === 'all'){
+            city = {$in: ['Surat', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar','Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad',
+            'New Delhi', 'Gurgaon', 'Noida', 'Faridabad','New York City', 'Buffalo', 'Rochester', 'Albany',
+            'Los Angeles', 'San Francisco', 'San Diego', 'Sacramento','Houston', 'Dallas', 'Austin', 'San Antonio']};
+        }
+
+        let parking = req.query.parking;
+
+        if(parking === undefined || parking === 'false'){
+            parking = {$in: [false,true]};
+        }
+
+        let swimmingPool = req.query.swimmingPool;
+
+        if(swimmingPool === undefined || swimmingPool === 'false'){
+            swimmingPool = {$in: [false,true]};
+        }
+        let garden = req.query.garden;
+
+        if(garden === undefined || garden === 'false'){
+            garden = {$in: [false,true]};
+        }
+        let elevator = req.query.elevator;
+
+        if(elevator === undefined || elevator === 'false'){
+            elevator = {$in: [false,true]};
+        }
+        
+
+        const searchTerm = req.query.searchTerm || '';
+
+        const sort = req.query.sort || 'createdAt';
+
+        const order = req.query.order || 'desc';
+
+        const listings = await permlist.find({
+            description: {$regex:searchTerm,$options:'i'},
+            propertyType,
+            'amenities.parking':parking,
+            'amenities.swimmingPool':swimmingPool,
+            'amenities.garden':garden,
+            'amenities.elevator':elevator,
+            furnished,
+            country,
+            city,
+            state,
+            sold:false
+        }).sort({
+            [sort]:order
+        }).limit(limit).skip(startIndex);
+        
+
+        return res.status(200).json({success:true,listing:listings});
+
+
+    } catch (error) {
+        next(error);
     }
 };

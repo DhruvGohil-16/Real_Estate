@@ -1,16 +1,22 @@
 import React,{useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
-import { FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
-import { FcApproval,FcCancel } from "react-icons/fc";
+import { FaSearch,FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
+import { FcApproval } from "react-icons/fc";
 import { FaLocationDot,FaHouseLock } from "react-icons/fa6";
-import { IoIosDoneAll } from "react-icons/io";
 import { TbRulerMeasure, TbReceiptTax } from "react-icons/tb";
-import { MdOutlinePendingActions } from "react-icons/md";
 import { PiPark } from "react-icons/pi";
 import { MdAddHomeWork } from "react-icons/md";
 import { GiElevator, GiHomeGarage, GiWoodBeam } from "react-icons/gi";
-import { Tabs, TabList, TabPanels, Tab, TabPanel,Modal, Button,useDisclosure,
+import { Modal, Button,useDisclosure,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverFooter,
+    PopoverArrow,
+    PopoverCloseButton,
     ModalOverlay,
     ModalContent,
     ModalHeader,
@@ -23,21 +29,45 @@ import { Tabs, TabList, TabPanels, Tab, TabPanel,Modal, Button,useDisclosure,
     AccordionIcon,
     Box,
    } from '@chakra-ui/react'
-import Header from '../components/Header';
 import MyFooter from '../components/MyFooter';
 import ImageSlider from '../components/ImageSlider';
 
-export default function UserProperty() {
+export default function Search() {
 
-    const [pendingProperties, setPendingProperties] = useState([]);
     const [listedProperties, setListedProperties] = useState([]);
-    const [rejectedProperties, setRejectedProperties] = useState([]);
-    const [soldProperties, setSoldProperties] = useState([]);
     const [propIndex, setPropIndex] = useState(0);
     const [property,setProperty] = useState([]);
     const [error, setError] = useState("");
+    const [searchbardata, setSearchbardata] = useState({
+        searchTerm: '',
+        propertyType: '',
+        country:'',
+        state:'',
+        city:'',
+        swimmingPool:false,
+        elevator:false,
+        garden:false,
+        parking: false,
+        furnished: false,
+        offer: false,
+        sort: 'created_at',
+        order: 'desc',
+    });
     const { currentUser} = useSelector((state) => state.user);
     const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const countryOption = ['India','USA'];
+
+    const stateOptions = ['Gujarat', 'Maharashtra', 'Delhi','New York', 'California', 'Texas'];
+    
+    const cityOptions = ['Surat', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar','Mumbai', 'Pune',
+     'Nagpur', 'Nashik', 'Aurangabad','New Delhi', 'Gurgaon', 'Noida', 'Faridabad','New York City', 
+     'Buffalo', 'Rochester', 'Albany','Los Angeles', 'San Francisco', 'San Diego', 'Sacramento',
+     'Houston', 'Dallas', 'Austin', 'San Antonio'];
+
+    const amenitiesOptions = ['garden', 'parking', 'elevator','swimmingPool'];
+
+    const sortOptions = ['Price high to low','Price low to high','Latest','Oldest']
 
     const handleIndexClick = (index,flag) => {
         setPropIndex(index);
@@ -52,59 +82,9 @@ export default function UserProperty() {
         onOpen();
     }
 
-    const fetchPendingProperties = async () => {
-        setError('');
-        try {
-            const response = await fetch(`/api/listing/pendingReq/${currentUser._id}`);
-            const Data = await response.json();
-            
-            if (Data.success === false)
-                setError(Data.message);
-            else{
-                setError('');
-                setPendingProperties(Data.data);
-                console.log(Data);
-            }
-        } catch (error) {
-            setError(error);
-        }
-    };
+    const handleSubmit = () => {
 
-    const fetchSoldProperties = async () => {
-        setError('');
-        try {
-            const response = await fetch(`/api/listing/soldProperty/${currentUser._id}`);
-            const Data = await response.json();
-            
-            if (Data.success === false)
-                setError(Data.message);
-            else{
-                setError('');
-                setSoldProperties(Data.data);
-                console.log(Data);
-            }
-        } catch (error) {
-            setError(error);
-        }
-    };
-
-    const fetchRejectedProperties = async () => {
-        setError('');
-        try {
-            const response = await fetch(`/api/listing/rejectedReq/${currentUser._id}`);
-            const Data = await response.json();
-            
-            if (Data.success === false)
-                setError(Data.message);
-            else{
-                setError('');
-                setRejectedProperties(Data.data);
-                console.log(Data);
-            }
-        } catch (error) {
-            setError(error);
-        }
-    };
+    }
 
     const fetchListedProperties = async () => {
         setError('');
@@ -124,29 +104,106 @@ export default function UserProperty() {
     };
     useEffect(() => {
         window.scrollTo(0,0);
-        fetchRejectedProperties();
-        fetchListedProperties();
-        fetchPendingProperties();
-        fetchSoldProperties();
-        setProperty([]);
-    }, []);
+        console.log(searchbardata);
+    }, [searchbardata]);
 
   return (
     <div>
-        
+      <div className='flex flex-col'>
+        <div className='bg-gray-400'>
+            <form onSubmit={handleSubmit}>
+                <div className='flex items-center justify-center m-4 gap-2 border-black/50 border-2 p-3 rounded-md'>
+                    <div className='bg-slate-200 flex items-center p-3 rounded-full border font-serif border-amber-100 hover:shadow-lg hover:border-blue-400'>
+                        <input className='bg-transparent font-serif placeholder-slate-500 focus:outline-none ty:w-32 df:w-36 ds:w-44 smd0:w-56 smd:w-64 mdl:w-80' autoComplete='off'
+                        type='text' 
+                        name='searchbar'
+                        id='searchbar'
+                        placeholder='Address, City, Zip Code or Neighborhood....'
+                        onChange={(e)=> setSearchbardata({...searchbardata,searchTerm:e.target.value})}
+                        value={searchbardata.searchTerm}/>
+
+                        <button type='submit' name='search' id='search'>
+                            <FaSearch className='text-black/80 flex cursor-pointer'/>
+                        </button>
+                    </div>
+                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-transform duration-500' value={searchbardata.country} onChange={(e) => setSearchbardata({...searchbardata,country:e.target.value})}>
+                        <option value="">-Country-</option>
+                        {countryOption.map((country) => (
+                        <option key={country} value={country}>
+                            {country}
+                        </option>
+                        ))}
+                    </select>
+                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.state} onChange={(e) => setSearchbardata({...searchbardata,state:e.target.value})}>
+                        <option value="">-State-</option>
+                        {stateOptions.map((state) => (
+                        <option key={state} value={state}>
+                            {state}
+                        </option>
+                        ))}
+                    </select>
+                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.city} onChange={(e) => setSearchbardata({...searchbardata,city:e.target.value})}>
+                        <option value="">-City-</option>
+                        {cityOptions.map((city) => (
+                        <option key={city} value={city}>
+                            {city}
+                        </option>
+                        ))}
+                    </select>            
+                    <select defaultValue={'created_at_desc'} className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.city} onChange={(e) => setSearchbardata({...searchbardata,city:e.target.value})}>
+                        <option value="">-Sort By-</option>
+                        {sortOptions.map((sort) => (
+                        <option key={sort} value={searchbardata.sort}>
+                            {sort}
+                        </option>
+                        ))}
+                    </select>
+                    <Popover>
+                        <PopoverTrigger>
+                            <Button fontFamily='serif' fontSize='larger' backgroundColor='gray.200' rounded='xl'>Options</Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <PopoverArrow />
+                            <PopoverHeader fontFamily='serif'>Search property options </PopoverHeader>
+                            <PopoverCloseButton />
+                            <PopoverBody>
+                                <div className='flex flex-col gap-1 m-2 font-serif'>
+                                    <div className='flex items-center gap-1'>
+                                        <input id='offer' type='checkbox' checked={searchbardata.offer} onChange={(e)=>setSearchbardata({...searchbardata,offer:e.target.checked})}/>
+                                        <span>offer</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <input id={amenitiesOptions[0]} type='checkbox' checked={searchbardata.garden} onChange={(e)=>setSearchbardata({...searchbardata,garden:e.target.checked})}/>
+                                        <span>{amenitiesOptions[0]}</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <input id={amenitiesOptions[1]} type='checkbox' checked={searchbardata.parking} onChange={(e)=>setSearchbardata({...searchbardata,parking:e.target.checked})}/>
+                                        <span>{amenitiesOptions[1]}</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <input id={amenitiesOptions[2]} type='checkbox' checked={searchbardata.elevator} onChange={(e)=>setSearchbardata({...searchbardata,elevator:e.target.checked})}/>
+                                        <span>{amenitiesOptions[2]}</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <input id={amenitiesOptions[3]} type='checkbox' checked={searchbardata.swimmingPool} onChange={(e)=>setSearchbardata({...searchbardata,swimmingPool:e.target.checked})}/>
+                                        <span>{amenitiesOptions[3]}</span>
+                                    </div>
+                                    <div className='flex items-center gap-1'>
+                                        <input id='furnished' type='checkbox' checked={searchbardata.furnished} onChange={(e)=>setSearchbardata({...searchbardata,furnished:e.target.checked})}/>
+                                        <span>furnished</span>
+                                    </div>
+                                </div>
+                            </PopoverBody>
+                        </PopoverContent>
+                    </Popover>
+                    
+                </div>
+
+            </form>
+        </div>
         <div className='flex min-h-screen bg-gray-200 bg-gradient-to-b from-gray-400 to-transparent'>
             <div className="container mx-auto py-8 ">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Properties</h2>
-                <Tabs>
-                    <TabList className='w-fit m-5'>
-                        <Tab>Listed</Tab>
-                        <Tab>Pending</Tab>
-                        <Tab>Rejected</Tab>
-                        <Tab>Sold</Tab>
-                    </TabList>
-
-                    <TabPanels>
-                        <TabPanel>
+                
                         {listedProperties.length ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {listedProperties.map((property,index) => (
@@ -181,117 +238,6 @@ export default function UserProperty() {
                             ) : (
                                 <p>No properties listed...</p>
                             )}
-                        </TabPanel>
-                        <TabPanel>
-                            {pendingProperties.length ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {pendingProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                            <img src={property.images[0].url} onClick={() => handleIndexClick(index,1)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
-                                            <div className='m-6'>
-                                                {property.offer && (
-                                                    <div className='flex flex-row w-fit gap-2'>
-                                                        <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                                        <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
-                                                    </div>
-                                                )}
-                                                {!property.offer && (
-                                                    <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                                )}
-                                                <div className="flex flex-row gap-7 justify-start my-4">
-                                                    <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
-                                                </div>
-                                                <div className='grid grid-flow-col gap-2'>
-                                                    <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                    <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,1)}>More Info</Button>
-                                                        <div className='flex font-serif mt-px items-center'>Status : <MdOutlinePendingActions className=' mt-1 ml-1' size={25}/></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No properties pending...</p>
-                            )}
-                        </TabPanel>
-                        <TabPanel>
-                        {rejectedProperties.length ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {rejectedProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                            <img src={property.images[0].url} onClick={() => handleIndexClick(index,3)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
-                                            <div className='m-6'>
-                                                {property.offer && (
-                                                    <div className='flex flex-row gap-2'>
-                                                        <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                                        <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
-                                                    </div>
-                                                )}
-                                                {!property.offer && (
-                                                    <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                                )}
-                                                <div className="flex flex-row gap-7 justify-start my-4">
-                                                    <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
-                                                    <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
-                                                </div>
-                                                <div className='grid grid-flow-col gap-2'>
-                                                    <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                    <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,3)}>More Info</Button>
-                                                        <div className='flex font-serif mt-px items-center'>Status : <FcCancel className=' mt-1 ml-1' size={25}/></div>
-                                                    </div>
-                                                </div>
-                                            </div>                                          
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No properties rejected...</p>
-                            )}
-                        </TabPanel>
-                        <TabPanel>
-                        {soldProperties.length ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {soldProperties.map((property,index) => (
-                                        <div key={property._id} className="bg-slate-200 shadow-lg rounded-xl m-6">
-                                        <img src={property.images[0].url} onClick={() => handleIndexClick(index,2)} alt={property.propertyName} className="w-full h-44 rounded-t-md mb-4 cursor-pointer" />
-                                        <div className='m-6'>
-                                            {property.offer && (
-                                                <div className='flex flex-row gap-2'>
-                                                    <div className="text-black text-black/75 text-lg line-through font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                                    <div className='text-black text-xl font-semibold font-serif'>₹{Intl.NumberFormat('en-IN').format(property.discountPrice)}</div>
-                                                </div>
-                                            )}
-                                            {!property.offer && (
-                                                <div className="text-black text-xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property.price)}</div>
-                                            )}
-                                            <div className="flex flex-row gap-7 justify-start my-4">
-                                                <div className="text-gray-600 "><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bedrooms)}</span> bed</div>
-                                                <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.bathrooms)}</span> bath</div>
-                                                <div className="text-gray-600"><span className='text-black font-bold'>{Intl.NumberFormat('en-IN').format(property.sqarea)}</span> sqft</div>
-                                            </div>
-                                            <div className='grid grid-flow-col gap-2'>
-                                                <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
-                                                <div className='flex justify-end flex-col'>
-                                                    <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,2)}>More Info</Button>
-                                                    <div className='flex font-serif mt-px items-center'>Status : <IoIosDoneAll className=' mt-1 ml-1' size={25}/></div>
-                                                </div>
-                                            </div>
-                                        </div>                                          
-                                    </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p>No properties sold...</p>
-                            )}
-                        </TabPanel>
-                    </TabPanels>
-                </Tabs>
                 { property[propIndex] && <Modal isOpen={isOpen} size='full' onClose={onClose}>
                     <ModalOverlay />
                     <ModalContent>
@@ -310,18 +256,6 @@ export default function UserProperty() {
                                     {!property[propIndex].offer && (
                                         <div className="text-black text-3xl font-semibold font-serif">₹{Intl.NumberFormat('en-IN').format(property[propIndex].price)}</div>
                                     )}
-                                    {/* <div className='flex flex-row gap-10'>
-                                        <Popover size='xl'>
-                                            <PopoverTrigger>
-                                                <div>Est. </div>
-                                            </PopoverTrigger>
-                                            <PopoverContent>
-                                                <PopoverCloseButton />
-                                                <PopoverHeader fontFamily='serif' fontSize={26}>Monthly payment</PopoverHeader>
-                                                <PopoverBody>Are you sure you want to have that milkshake?</PopoverBody>
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div> */}
                                     <div className="flex flex-row gap-7 justify-start my-4">
                                         <div className="text-black "><span className='font-bold'>{Intl.NumberFormat('en-IN').format(property[propIndex].bedrooms)}</span> bed</div>
                                         <div className="text-black"><span className='font-bold'>{Intl.NumberFormat('en-IN').format(property[propIndex].bathrooms)}</span> bath</div>
@@ -447,6 +381,7 @@ export default function UserProperty() {
             <p className="m-3 text-red-600 text-sm">{error}</p>
         </div>
         <MyFooter/>
+      </div>
     </div>
   )
 }

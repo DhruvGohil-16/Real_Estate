@@ -250,6 +250,7 @@ export const listedProp = async (req, res, next) => {
             'amenities.elevator':elevator,
             furnished,
             country,
+            offer,
             city,
             state,
             sold:false

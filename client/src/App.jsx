@@ -24,6 +24,7 @@ import RecentBuyLead from './pages/RecentBuyLead';
 import NewBuyLead from './pages/NewBuyLead';
 import Header from './components/Header';
 import AgentHeader from './components/AgentHeader';
+import Search from './pages/search';
 
 export default function App() {
 
@@ -36,7 +37,7 @@ export default function App() {
       <Route element={role === 'agent' ? <AgentDashboard /> : <PrivateRoute3 from="home"/>}>
         <Route path='/' element={<Home/>} />
       </Route>
-
+      <Route path='/search' element={<Search/>} />
       <Route element={<PrivateRoute3 from="sign-up"/>}>
         <Route path='/sign-up' element={<SignUp/>} />
       </Route>

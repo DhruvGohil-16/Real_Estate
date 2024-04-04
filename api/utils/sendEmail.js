@@ -4,8 +4,10 @@ export const sendEmail = async (fromId, toId, subject, text, next) => {
     let epass = null;
     if (fromId === process.env.AgentMail)
         epass = process.env.AgentMailPass;
-    else
+    else if(fromId === process.env.TeamMail)
         epass = process.env.TeamMailPass;
+    else
+        epass = process.env.MYEMAILPass;
         console.log(toId);
     try {
         const transporter = nodemailer.createTransport({

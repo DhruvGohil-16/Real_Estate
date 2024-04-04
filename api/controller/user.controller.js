@@ -141,3 +141,17 @@ export const buyReq = async (req,res,next) => {
         return next(errhandler(404,error)); 
     }
 }
+
+export const sendUserEmail = async(req,res,next) => {
+    try {
+        const {from,to,subject,text} = req.body;
+        var flag1 = await sendEmail(from,to,subject,text,next);
+
+        if(!flag1)
+            res.status(201).json({success:true});
+        else
+            res.status(201).json({success:false});
+    } catch (error) {
+        next(errhandler(error))
+    }
+}

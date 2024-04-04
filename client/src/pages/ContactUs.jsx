@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import React, { useState } from "react";
 
 const ContactUs = () => {
@@ -10,23 +11,30 @@ const ContactUs = () => {
   });
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState('');
-
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
+  const toast = useToast();
   const handleChange =(e) => {
-    setFormData({
+    setFormData({...formData,
       [e.target.name]:e.target.value
     });
   }
 
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  
+  }
   const handleSubmit = async(e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     await delay(2000);
+    toast({
+      title: 'Message sent successfully',
+      position: 'top',
+      status: 'success',
+      duration: 6000,
+      isClosable: true,
+  });
     setError('*message sent successfully!!!');
+    setLoading(false);
 
   }
 
@@ -171,7 +179,7 @@ const ContactUs = () => {
                   <input
                     row="6"
                     placeholder="Your Message"
-                    name="details"
+                    name="message"
                     value={formData.message}  onChange={handleChange}
                     className="w-full px-4 py-2 my-4 border rounded 
                             focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500

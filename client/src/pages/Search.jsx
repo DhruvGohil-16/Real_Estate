@@ -1,4 +1,5 @@
 import React,{useEffect, useState} from 'react'
+import { useNavigate } from 'react-router-dom';
 import {useSelector} from 'react-redux'
 import { BsFillHouseAddFill } from "react-icons/bs";
 import { FaSearch,FaHome, FaHammer, FaSwimmingPool} from "react-icons/fa";
@@ -35,6 +36,7 @@ import ImageSlider from '../components/ImageSlider';
 export default function Search() {
 
     const [listedProperties, setListedProperties] = useState([]);
+    const [loading,setLoading] = useState(false);
     const [propIndex, setPropIndex] = useState(0);
     const [property,setProperty] = useState([]);
     const [error, setError] = useState("");
@@ -55,6 +57,7 @@ export default function Search() {
     });
     const { currentUser} = useSelector((state) => state.user);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const navigate = useNavigate();
 
     const countryOption = ['India','USA'];
 
@@ -66,6 +69,8 @@ export default function Search() {
      'Houston', 'Dallas', 'Austin', 'San Antonio'];
 
     const amenitiesOptions = ['garden', 'parking', 'elevator','swimmingPool'];
+
+    const typeOptions =['Apartment', 'House', 'Condo','Townhouse'];
 
     const sortOptions = ['Price high to low','Price low to high','Latest','Oldest']
 
@@ -82,37 +87,96 @@ export default function Search() {
         onOpen();
     }
 
-    const handleSubmit = () => {
+    const handleCheckBox = (e) => {
+        const sort = e.target.value.split('_')[0] || 'created_at';
 
+        const order = e.target.value.split('_')[1] || 'desc';
+  
+        setSearchbardata({ ...searchbardata, sort, order });    
     }
 
-    const fetchListedProperties = async () => {
-        setError('');
-        try {
-            const response = await fetch(`/api/listing/verifiedReq/${currentUser._id}`);
-            const Data = await response.json();
-            
-            if (Data.success === false)
-                setError(Data.message);
-            else{
-                setError('');
-                setListedProperties(Data.data);
-            }
-        } catch (error) {
-            setError(error);
-        }
-    };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const urlParams = new URLSearchParams();
+        urlParams.set('searchTerm', searchbardata.searchTerm);
+        urlParams.set('propertyType', searchbardata.propertyType);
+        urlParams.set('country', searchbardata.country);
+        urlParams.set('state', searchbardata.state);
+        urlParams.set('city', searchbardata.city);
+        urlParams.set('parking', searchbardata.parking);
+        urlParams.set('garden', searchbardata.garden);
+        urlParams.set('swimmingPool', searchbardata.swimmingPool);
+        urlParams.set('elevator', searchbardata.elevator);
+        urlParams.set('furnished', searchbardata.furnished);
+        urlParams.set('offer', searchbardata.offer);
+        urlParams.set('sort', searchbardata.sort);
+        urlParams.set('order', searchbardata.order);
+        const searchQuery = urlParams.toString();
+        navigate(`/search?${searchQuery}`);
+    }
+
     useEffect(() => {
-        window.scrollTo(0,0);
-        console.log(searchbardata);
-    }, [searchbardata]);
+        const urlParams = new URLSearchParams(location.search);
+        const searchTermFromUrl = urlParams.get('searchTerm');
+        const propertyTypeFromUrl = urlParams.get('propertyType');
+        const countryFromUrl = urlParams.get('country');
+        const stateFromUrl = urlParams.get('state');
+        const cityFromUrl = urlParams.get('city');
+        const parkingFromUrl = urlParams.get('parking');
+        const gardenFromUrl = urlParams.get('garden');
+        const swimmingPoolFromUrl = urlParams.get('swimmingPool');
+        const elevatorFromUrl = urlParams.get('elevator');
+        const furnishedFromUrl = urlParams.get('furnished');
+        const offerFromUrl = urlParams.get('offer');
+        const sortFromUrl = urlParams.get('sort');
+        const orderFromUrl = urlParams.get('order');
+
+        if (
+            searchTermFromUrl || propertyTypeFromUrl ||
+            countryFromUrl || stateFromUrl || cityFromUrl ||
+            parkingFromUrl || gardenFromUrl || elevatorFromUrl || swimmingPoolFromUrl ||
+            furnishedFromUrl ||
+            offerFromUrl ||
+            sortFromUrl ||
+            orderFromUrl
+          ) {
+            setSearchbardata({
+              searchTerm: searchTermFromUrl || '',
+              propertyType: propertyTypeFromUrl || '',
+              country: countryFromUrl || '',
+              state: stateFromUrl || '',
+              city: cityFromUrl || '',
+              parking: parkingFromUrl === 'true' ? true : false,
+              elevator: elevatorFromUrl === 'true' ? true : false,
+              garden: gardenFromUrl === 'true' ? true : false,
+              swimmingPool: swimmingPoolFromUrl === 'true' ? true : false,
+              furnished: furnishedFromUrl === 'true' ? true : false,
+              offer: offerFromUrl === 'true' ? true : false,
+              sort: sortFromUrl || 'created_at',
+              order: orderFromUrl || 'desc',
+            });
+        }
+
+        const fetchListings = async () => {
+            setLoading(true);
+            const searchQuery = urlParams.toString();
+            const res = await fetch(`/api/listing/listedProp?${searchQuery}`);
+            const data = await res.json();
+            
+            setListedProperties(data.listing);
+            setLoading(false);
+        };
+
+        fetchListings();
+
+  }, [location.search]);
 
   return (
     <div>
       <div className='flex flex-col'>
         <div className='bg-gray-400'>
             <form onSubmit={handleSubmit}>
-                <div className='flex items-center justify-center m-4 gap-2 border-black/50 border-2 p-3 rounded-md'>
+                <div className='flex items-center m-4 gap-2 border-black/50 border-2 p-3 rounded-md'>
                     <div className='bg-slate-200 flex items-center p-3 rounded-full border font-serif border-amber-100 hover:shadow-lg hover:border-blue-400'>
                         <input className='bg-transparent font-serif placeholder-slate-500 focus:outline-none ty:w-32 df:w-36 ds:w-44 smd0:w-56 smd:w-64 mdl:w-80' autoComplete='off'
                         type='text' 
@@ -126,7 +190,7 @@ export default function Search() {
                             <FaSearch className='text-black/80 flex cursor-pointer'/>
                         </button>
                     </div>
-                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-transform duration-500' value={searchbardata.country} onChange={(e) => setSearchbardata({...searchbardata,country:e.target.value})}>
+                    <select className='bg-gray-200 w-28 border border-gray-200 text-gray-700 p-2  rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-transform duration-500' value={searchbardata.country} onChange={(e) => setSearchbardata({...searchbardata,country:e.target.value})}>
                         <option value="">-Country-</option>
                         {countryOption.map((country) => (
                         <option key={country} value={country}>
@@ -134,7 +198,7 @@ export default function Search() {
                         </option>
                         ))}
                     </select>
-                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.state} onChange={(e) => setSearchbardata({...searchbardata,state:e.target.value})}>
+                    <select className='bg-gray-200 w-24 border border-gray-200 text-gray-700 p-2  rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.state} onChange={(e) => setSearchbardata({...searchbardata,state:e.target.value})}>
                         <option value="">-State-</option>
                         {stateOptions.map((state) => (
                         <option key={state} value={state}>
@@ -142,7 +206,7 @@ export default function Search() {
                         </option>
                         ))}
                     </select>
-                    <select className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.city} onChange={(e) => setSearchbardata({...searchbardata,city:e.target.value})}>
+                    <select className='bg-gray-200 w-20 border border-gray-200 text-gray-700 p-2  rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.city} onChange={(e) => setSearchbardata({...searchbardata,city:e.target.value})}>
                         <option value="">-City-</option>
                         {cityOptions.map((city) => (
                         <option key={city} value={city}>
@@ -150,13 +214,29 @@ export default function Search() {
                         </option>
                         ))}
                     </select>            
-                    <select defaultValue={'created_at_desc'} className='bg-gray-200 w-fit border border-gray-200 text-gray-700 p-2 pr-8 rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.city} onChange={(e) => setSearchbardata({...searchbardata,city:e.target.value})}>
-                        <option value="">-Sort By-</option>
-                        {sortOptions.map((sort) => (
-                        <option key={sort} value={searchbardata.sort}>
-                            {sort}
+                    <select className='bg-gray-200 w-20 border border-gray-200 text-gray-700 p-2  rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' value={searchbardata.propertyType} onChange={(e) => setSearchbardata({...searchbardata,propertyType:e.target.value})}>
+                        <option value="">-Type-</option>
+                        {typeOptions.map((type) => (
+                        <option key={type} value={type}>
+                            {type}
                         </option>
                         ))}
+                    </select>            
+                    <select defaultValue={'created_at_desc'} className='bg-gray-200 w-32 border border-gray-200 text-gray-700 p-2  rounded-xl font-serif leading-tight focus:outline-none focus:bg-white focus:border-gray-500 transition-all duration-500' onChange={handleCheckBox}>
+                        
+                        <option key={sortOptions[0]} value='price_desc'>
+                            {sortOptions[0]}
+                        </option>
+                        <option key={sortOptions[1]} value='price_asc'>
+                            {sortOptions[1]}
+                        </option>
+                        <option key={sortOptions[2]} value='createdAt_desc'>
+                            {sortOptions[2]}
+                        </option>
+                        <option key={sortOptions[3]} value='createdAt_asc'>
+                            {sortOptions[3]}
+                        </option>
+                
                     </select>
                     <Popover>
                         <PopoverTrigger>

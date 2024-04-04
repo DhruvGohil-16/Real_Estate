@@ -8,6 +8,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 export const listing = async (req,res,next) => {
     try {
         const { country, state, city} = req.body.formData.location;
+        const {garden, elevator, security, swimmingPool, parking} = req.body.amenities;
 
         const agentDetails = await agent.findOne({ "location.country": country, "location.state": state, "location.city": city });
         if (!agentDetails) {
@@ -44,6 +45,11 @@ export const listing = async (req,res,next) => {
             amenities: req.body.formData.propertyDetails.amenities,
             furnished: req.body.formData.propertyDetails.furnished,
             builtDate: formattedBuiltDate,
+            garden,
+            swimmingPool,
+            elevator,
+            security,
+            parking,
         });
 
         const listProp = await newProperty.save();
@@ -170,7 +176,8 @@ export const rejectedlisting = async (req, res, next) => {
 
 export const listedProp = async (req, res, next) => {
     try {
-        
+        console.log("listedProp called");
+        console.log(req);
         const limit  = parseInt(req.query.limit) || 9;
         const startIndex = parseInt(req.query.startIndex) || 0;
 
@@ -188,29 +195,37 @@ export const listedProp = async (req, res, next) => {
 
         let propertyType = req.query.propertyType;
 
-        if(propertyType === undefined || propertyType === 'all'){
+        if(propertyType === undefined || propertyType === ''){
             propertyType = {$in: ['Apartment', 'House', 'Condo','Townhouse']};
         }
+        console.log(propertyType);
+
 
         let country = req.query.country;
 
-        if(country === undefined || country === 'all'){
+        if(country === undefined || country === ''){
             country = {$in: ['India','USA']};
         }
+        console.log(country);
+
 
         let state = req.query.state;
-
-        if(state === undefined || state === 'all'){
+        
+        if(state === undefined || state === ''){
             state = {$in: ['Gujarat', 'Maharashtra', 'Delhi','New York', 'California', 'Texas']};
         }
+        console.log(state);
 
         let city = req.query.city;
 
-        if(city === undefined || city === 'all'){
+        if(city === undefined || city === ''){
             city = {$in: ['Surat', 'Ahmedabad', 'Vadodara', 'Rajkot', 'Bhavnagar','Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad',
             'New Delhi', 'Gurgaon', 'Noida', 'Faridabad','New York City', 'Buffalo', 'Rochester', 'Albany',
             'Los Angeles', 'San Francisco', 'San Diego', 'Sacramento','Houston', 'Dallas', 'Austin', 'San Antonio']};
         }
+
+        console.log(city);
+
 
         let parking = req.query.parking;
 
@@ -218,6 +233,7 @@ export const listedProp = async (req, res, next) => {
             parking = {$in: [false,true]};
         }
 
+        console.log(parking);
         let swimmingPool = req.query.swimmingPool;
 
         if(swimmingPool === undefined || swimmingPool === 'false'){
@@ -244,10 +260,10 @@ export const listedProp = async (req, res, next) => {
         const listings = await permlist.find({
             description: {$regex:searchTerm,$options:'i'},
             propertyType,
-            'amenities.parking':parking,
-            'amenities.swimmingPool':swimmingPool,
-            'amenities.garden':garden,
-            'amenities.elevator':elevator,
+            parking,
+            swimmingPool,
+            garden,
+            elevator,
             furnished,
             country,
             offer,
@@ -257,7 +273,7 @@ export const listedProp = async (req, res, next) => {
         }).sort({
             [sort]:order
         }).limit(limit).skip(startIndex);
-        
+        console.log(listings);
 
         return res.status(200).json({success:true,listing:listings});
 

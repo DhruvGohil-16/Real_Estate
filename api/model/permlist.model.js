@@ -117,6 +117,22 @@ const userlisting = new mongoose.Schema({
         type: String,
         required: true
     },
+    parking : {
+        type: Boolean,
+        default:false
+    },
+    swimmingPool : {
+        type: Boolean,
+        default:false
+    },
+    garden : {
+        type: Boolean,
+        default:false
+    },
+    elevator : {
+        type: Boolean,
+        default:false
+    }
   }, { timestamps: true });
 
 const permlist = mongoose.model('permlist',userlisting);

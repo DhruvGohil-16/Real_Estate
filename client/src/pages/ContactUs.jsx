@@ -1,7 +1,35 @@
-import { Input } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 
 const ContactUs = () => {
+
+  const [formData,setFormData] = useState({
+    name:'',
+    email:'',
+    phone:'',
+    message:''
+  });
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState('');
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  const handleChange =(e) => {
+    setFormData({
+      [e.target.name]:e.target.value
+    });
+  }
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    await delay(2000);
+    setError('*message sent successfully!!!');
+
+  }
+
   return (
     <>
       <section className="px-20 relative z-10 overflow-hidden shadow-2xl border border-gray-100 bg-gray-100 py-20 dark:bg-dark lg:py-[120px]">
@@ -112,10 +140,11 @@ const ContactUs = () => {
                 <span className="mb-4 block text-2xl text-gray-500 font-semibold text-primary">
                   Contact Us
                 </span>
-                <form autoComplete="off">
+                <form onSubmit={handleSubmit} autoComplete="off">
                   <input
                     type="text"
                     name="name"
+                    value={formData.name}   onChange={handleChange}
                     placeholder="Your Name"
                     className="w-full px-4 py-2 my-4 border rounded 
                             focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
@@ -124,14 +153,16 @@ const ContactUs = () => {
                   <input
                     type="text"
                     name="email"
+                    value={formData.email}  onChange={handleChange}
                     placeholder="Your Email"
                     className="w-full px-4 py-2 my-4 border rounded 
                             focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
                           hover:border-blue-500" required
                   />
                   <input
-                    type="text"
+                    type="number"
                     name="phone"
+                    value={formData.phone}  onChange={handleChange}
                     placeholder="Your Phone"
                     className="w-full px-4 py-2 my-4 border rounded 
                             focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
@@ -141,7 +172,7 @@ const ContactUs = () => {
                     row="6"
                     placeholder="Your Message"
                     name="details"
-                    defaultValue=""
+                    value={formData.message}  onChange={handleChange}
                     className="w-full px-4 py-2 my-4 border rounded 
                             focus:outline-none focus:ring-2 focus:drop-shadow-md focus:duration-200 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-100 focus:border-blue-500
                           hover:border-blue-500" required
@@ -149,12 +180,14 @@ const ContactUs = () => {
                   <div className="mt-6">
                     <button
                       type="submit"
+                      disabled={loading}
                       className="w-full p-2 rounded  border border-black hover:bg-slate-200"
                     >
-                      Send Message
+                      {loading ? 'sending message...' : 'Send Message'}
                     </button>
                   </div>
                 </form>
+                <p className="m-3 text-red-600 text-sm">{error}</p>
                 <div>
                   <span className="absolute -right-9 -top-10 z-[-1]">
                     <svg
@@ -974,33 +1007,3 @@ const ContactUs = () => {
 
 export default ContactUs;
 
-const ContactTextArea = ({ row, placeholder, name, defaultValue }) => {
-  return (
-    <>
-      <div className="mb-6">
-        <textarea
-          rows={row}
-          placeholder={placeholder}
-          name={name}
-          className="w-full resize-none rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6"
-          defaultValue={defaultValue}
-        />
-      </div>
-    </>
-  );
-};
-
-const ContactInputBox = ({ type, placeholder, name }) => {
-  return (
-    <>
-      <div className="mb-6">
-        <input
-          type={type}
-          placeholder={placeholder}
-          name={name}
-          className="w-full rounded border border-stroke px-[14px] py-3 text-base text-body-color outline-none focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-dark-6"
-        />
-      </div>
-    </>
-  );
-};

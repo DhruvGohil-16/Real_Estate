@@ -65,9 +65,10 @@ export default function AgentHeader() {
             />
             <h1 className='font-bold text-2xl sm:text-3xl flex flex-wrap'>
 
-              <span className='text-slate-500'>Dr</span>
-              <span>.</span>
-              <span className='text-red-500'>Estate</span>
+            <span className='text-slate-500'>Dr</span>
+            <span className='text-red-500'>Estate</span>
+            <span>.</span>
+            <span className='text-green-500'>com</span>
 
             </h1>
           </Link>

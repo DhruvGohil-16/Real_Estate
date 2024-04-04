@@ -55,9 +55,6 @@ export default function Home() {
       url: './src/img6.jpg',
     },
     {
-      url: './src/img7.jpg',
-    },
-    {
       url: './src/img8.jpg',
     },
   ];
@@ -105,7 +102,7 @@ export default function Home() {
             <div className='flex flex-row gap-10'>
               <Link to='/buy'><div className='p-4 py-6 ty:hidden mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200  cursor-pointer'>Buy</div></Link>
               <Link to='/sell'><div className='p-4 py-6 ty:hidden  mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200 cursor-pointer'>Sell</div></Link>
-              <Link to='/rent'><div className='p-4 py-6 ty:hidden mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200 cursor-pointer'>Rent</div></Link>
+              <Link to='/your-property'><div className='p-4 py-6 ty:hidden mdl:inline font-serif text-lg text-white hover:border-b-4 hover:border-b-white hover:text-slate-200 cursor-pointer'>Your Property</div></Link>
             </div>
           </div>
         </div>

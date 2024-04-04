@@ -38,18 +38,16 @@ export default function Header() {
                       alt="Dr estate Logo"
           />
           <h1 className='font-bold text-2xl sm:text-3xl flex font-serif'>
-
             <span className='text-slate-500'>Dr</span>
-            <span>.</span>
             <span className='text-red-500'>Estate</span>
-
+            <span>.</span>
+            <span className='text-green-500'>com</span>
           </h1>
         </Link>
         
         <div className='flex justify-around'>
           <Link to='/buy'><div className='p-4 py-6 ty:hidden mdl:inline font-serif hover:border-t-4 hover:border-b-4 hover:border-b-black hover:border-t-gray-300 cursor-pointer'>Buy</div></Link>
           <Link to='/sell'><div className='p-4 py-6 ty:hidden  mdl:inline font-serif hover:border-t-4 hover:border-b-4 hover:border-b-black hover:border-t-gray-300 cursor-pointer'>Sell</div></Link>
-          <Link to='/rent'><div className='p-4 py-6 ty:hidden mdl:inline font-serif hover:border-y-4 hover:border-b-4 hover:border-b-black hover:border-t-gray-300 cursor-pointer'>Rent</div></Link>
         </div>
 
         <form onSubmit={handleSubmit} className='bg-slate-200 flex items-center p-3 rounded-full border font-serif border-amber-100 hover:shadow-lg hover:border-blue-400'>

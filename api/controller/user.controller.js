@@ -72,7 +72,7 @@ export const buyReq = async (req,res,next) => {
 
     try {
         console.log(req.body);
-        const userMap = await listBuyMap.find({userId:req.params.id,listId:req.body.property.propertyId});
+        const userMap = await listBuyMap.find({userId:req.params.id,listId:req.body.property.propertyId,accepted:0});
         const buyer = await user.findById(req.params.id);
         console.log(userMap);
         console.log(buyer);

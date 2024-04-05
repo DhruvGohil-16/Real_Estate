@@ -8,7 +8,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 export const listing = async (req,res,next) => {
     try {
         const { country, state, city} = req.body.formData.location;
-        const {garden, elevator, security, swimmingPool, parking} = req.body.amenities;
+        const {garden, elevator, security, swimmingPool, parking} = req.body.formData.propertyDetails.amenities;
 
         const agentDetails = await agent.findOne({ "location.country": country, "location.state": state, "location.city": city });
         if (!agentDetails) {

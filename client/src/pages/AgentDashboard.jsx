@@ -24,6 +24,7 @@ export default function AgentDashboard() {
             label
           }));
           setData(newData);
+          console.log(newData);
         }
 
     } catch (error) {

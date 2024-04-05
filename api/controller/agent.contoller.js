@@ -198,6 +198,7 @@ export const updatelisting = async (req, res, next) => {
 
             if(status==1){
                 propAgent.verified = propAgent.verified+1;
+                propAgent.viewed = propAgent.viewed+1;
                 await propAgent.save();
                 console.log("creating...");
                 const newListing = new permlist({
@@ -266,6 +267,7 @@ export const updatelisting = async (req, res, next) => {
             }
             else{
                 propAgent.rejected = propAgent.rejected+1;
+                propAgent.viewed = propAgent.viewed+1;
                 await propAgent.save();
     
                 if(updatedProperty){

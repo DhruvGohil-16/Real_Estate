@@ -71,6 +71,7 @@ export default function NewBuyLead() {
 
     const handleVerify = async(status) => {
         setError('');
+        setRejMessage('');
         console.log("called");
         var flag;
         
@@ -85,8 +86,10 @@ export default function NewBuyLead() {
             if(rejMessage){
                 flag = fetchVerify(status);
             }
-            else
+            else{
                 setRejMessage("*required");
+                return;
+            }
         };
         const result = await flag;
 

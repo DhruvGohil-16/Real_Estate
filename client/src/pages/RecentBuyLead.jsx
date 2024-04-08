@@ -47,7 +47,7 @@ export default function NewBuyLead() {
     }
     const handleVerify = async(status) => {
         setError('');
-        console.log("handleVerify called");
+        setRejMessage('');
         var flag;
         
         if(status==1){
@@ -65,8 +65,8 @@ export default function NewBuyLead() {
                 flag = fetchVerify(status);
             }
             else{
-                console.log("required");
                 setRejMessage("*required");
+                return;
             }
         };
         const result = await flag;

@@ -74,6 +74,7 @@ export default function NewLeads() {
     }
     const handleVerify = async(propId,status) => {
         setError('');
+        setRejMessage('');
         var flag;
         
         if(status==1){
@@ -87,8 +88,10 @@ export default function NewLeads() {
             if(rejMessage){
                 flag = fetchVerify(propId,status);
             }
-            else
+            else{
                 setRejMessage("*required");
+                return;
+            }
         };
         const result = await flag;
 

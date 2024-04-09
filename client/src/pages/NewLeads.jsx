@@ -90,6 +90,9 @@ export default function NewLeads() {
             }
             else{
                 setRejMessage("*required");
+                setLoading(false);
+                setListLoading(false);
+                setRejLoading(false);
                 return;
             }
         };

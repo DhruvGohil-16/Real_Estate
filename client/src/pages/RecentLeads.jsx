@@ -72,6 +72,9 @@ export default function RecentLeads() {
             }
             else{
                 setRejMessage("*required");
+                setLoading(false);
+                setListLoading(false);
+                setRejLoading(false);
                 return;
             }
         };

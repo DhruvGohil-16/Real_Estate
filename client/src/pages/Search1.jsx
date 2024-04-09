@@ -36,7 +36,6 @@ import ImageSlider from '../components/ImageSlider';
 export default function Search1() {
 
     const [listedProperties, setListedProperties] = useState([]);
-    const [loading,setLoading] = useState(false);
     const [propIndex, setPropIndex] = useState(0);
     const [property,setProperty] = useState([]);
     const [error, setError] = useState("");
@@ -74,16 +73,9 @@ export default function Search1() {
 
     const sortOptions = ['Price high to low','Price low to high','Latest','Oldest']
 
-    const handleIndexClick = (index,flag) => {
+    const handleIndexClick = (index) => {
         setPropIndex(index);
-        if(flag===0)
-            setProperty(listedProperties);
-        else if(flag===1)
-            setProperty(pendingProperties);
-        else if(flag===2)
-            setProperty(soldProperties);
-        else
-            setProperty(rejectedProperties);
+        setProperty(listedProperties);  
         onOpen();
     }
 
@@ -158,18 +150,41 @@ export default function Search1() {
         }
 
         const fetchListings = async () => {
-            setLoading(true);
             const searchQuery = urlParams.toString();
             const res = await fetch(`/api/listing/listedProp?${searchQuery}`);
             const data = await res.json();
             
             setListedProperties(data.listing);
-            setLoading(false);
         };
 
         fetchListings();
 
   }, [location.search]);
+
+  const fetchListings = async()=>{
+    const urlParams = new URLSearchParams();
+    urlParams.set('searchTerm', searchbardata.searchTerm);
+    urlParams.set('propertyType', searchbardata.propertyType);
+    urlParams.set('country', searchbardata.country);
+    urlParams.set('state', searchbardata.state);
+    urlParams.set('city', searchbardata.city);
+    urlParams.set('parking', searchbardata.parking);
+    urlParams.set('garden', searchbardata.garden);
+    urlParams.set('swimmingPool', searchbardata.swimmingPool);
+    urlParams.set('elevator', searchbardata.elevator);
+    urlParams.set('furnished', searchbardata.furnished);
+    urlParams.set('offer', searchbardata.offer);
+    urlParams.set('sort', searchbardata.sort);
+    urlParams.set('order', searchbardata.order);
+    const searchQuery = urlParams.toString();
+    const res = await fetch(`/api/listing/listedProp?${searchQuery}`);
+    const data = await res.json();
+    setListedProperties(data.listing);
+  }
+
+  useEffect(()=>{
+    fetchListings();
+  },[searchbardata]);
 
   return (
     <div>
@@ -307,7 +322,7 @@ export default function Search1() {
                                                 <div className='grid grid-flow-col gap-2'>
                                                     <p className="text-gray-600 text-balance font-serif w-9/12 overflow-hidden line-clamp-3 text-ellipsis">{property.address}</p>
                                                     <div className='flex justify-end flex-col'>
-                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index,0)}>More Info</Button>
+                                                        <Button colorScheme='teal' width='fit-content' fontFamily='serif' onClick={() => handleIndexClick(index)}>More Info</Button>
                                                         <div className='flex font-serif mt-px items-center'>Status : <FcApproval className=' mt-1 ml-1' size={25}/></div>
                                                     </div>
                                                 </div>
